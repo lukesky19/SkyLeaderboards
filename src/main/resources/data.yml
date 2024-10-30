@@ -1,0 +1,32 @@
+heads:
+  0:
+    location:
+      world: world
+      x: 0
+      y: 0
+      z: 0
+    # This should resolve to a placeholder name so that it can be used to set the head texture!
+    placeholder: ""
+signs:
+  0:
+    location:
+      world: world
+      x: 0
+      y: 0
+      z: 0
+    # This should be a placeholder resolve to a placeholder name so that it can be used to check if the player is online!
+    placeholder: ""
+    lines:
+      one: ""
+      two: ""
+      three: ""
+      four: ""
+npcs:
+  0:
+    location:
+      world: world
+      x: 0
+      y: 0
+      z: 0
+    # This should resolve to a placeholder name so that it can be used to set the skin!
+    placeholder: ""

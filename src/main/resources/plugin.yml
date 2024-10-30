@@ -1,0 +1,21 @@
+name: SkyLeaderboards
+version: '${version}'
+main: com.github.lukesky19.skymodels.SkyLeaderboards
+api-version: '1.21'
+author: lukeskywlker19
+depend: [Citizens, PlaceholderAPI]
+
+commands:
+  skyleaderboards:
+    description: The base command.
+    aliases: [slb]
+permissions:
+  skyleaderboards.command.skyleaderboards:
+    description: Permission to access the base command.
+    default: op
+  skyleaderboards.command.skyleaderboards.reload:
+    description: Permission to reload the plugin.
+    default: op
+  skyleaderboards.command.skyleaderboards.update:
+    description: Permission to force update the signs, heads, and NPCs.
+    default: op
