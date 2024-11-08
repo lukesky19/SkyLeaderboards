@@ -15,13 +15,13 @@
     You should have received a copy of the GNU Affero General Public License
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
-package com.github.lukesky19.skymodels;
+package com.github.lukesky19.skyleaderboards;
 
-import com.github.lukesky19.skymodels.command.SkyLeaderboardsCommand;
-import com.github.lukesky19.skymodels.configuration.loader.DataLoader;
-import com.github.lukesky19.skymodels.configuration.loader.LocaleLoader;
-import com.github.lukesky19.skymodels.configuration.loader.SettingsLoader;
-import com.github.lukesky19.skymodels.util.ConfigurationUtility;
+import com.github.lukesky19.skyleaderboards.command.SkyLeaderboardsCommand;
+import com.github.lukesky19.skyleaderboards.configuration.loader.DataLoader;
+import com.github.lukesky19.skyleaderboards.configuration.loader.LocaleLoader;
+import com.github.lukesky19.skyleaderboards.configuration.loader.SettingsLoader;
+import com.github.lukesky19.skyleaderboards.util.ConfigurationUtility;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.java.JavaPlugin;
 

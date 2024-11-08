@@ -15,7 +15,7 @@
     You should have received a copy of the GNU Affero General Public License
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
-package com.github.lukesky19.skymodels.util;
+package com.github.lukesky19.skyleaderboards.util;
 
 import me.clip.placeholderapi.PlaceholderAPI;
 import net.kyori.adventure.text.Component;
@@ -25,6 +25,7 @@ import net.kyori.adventure.text.minimessage.tag.Tag;
 import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver;
 import net.kyori.adventure.text.minimessage.tag.standard.StandardTags;
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 
@@ -83,7 +84,18 @@ public class FormatUtil {
         MiniMessage mm = MiniMessage.builder()
                 .tags(TagResolver.builder()
                         .resolver(StandardTags.defaults())
-                        .resolver(papiTag(player))
+                        .resolver(papiTagPlayer(player))
+                        .build())
+                .build();
+
+        return mm.deserialize(handleLegacyCodes(message)).decorationIfAbsent(TextDecoration.ITALIC, TextDecoration.State.FALSE);
+    }
+
+    public static Component format(@NotNull OfflinePlayer player, @NotNull String message) {
+        MiniMessage mm = MiniMessage.builder()
+                .tags(TagResolver.builder()
+                        .resolver(StandardTags.defaults())
+                        .resolver(papiTagOfflinePlayer(player))
                         .build())
                 .build();
 
@@ -131,7 +143,31 @@ public class FormatUtil {
      * @param player the placeholder
      * @return the tag resolver
      */
-    private static @NotNull TagResolver papiTag(final @NotNull Player player) {
+    private static @NotNull TagResolver papiTagPlayer(final @NotNull Player player) {
+        return TagResolver.resolver("papi", (argumentQueue, context) -> {
+            // Get the string placeholder that they want to use.
+            final String papiPlaceholder = argumentQueue.popOr("papi tag requires an argument").value();
+
+            // Then get PAPI to parse the placeholder for the given placeholder.
+            final String parsedPlaceholder = PlaceholderAPI.setPlaceholders(player, '%' + papiPlaceholder + '%');
+
+            // We need to turn this ugly legacy string into a nice component.
+            final Component componentPlaceholder = LegacyComponentSerializer.legacySection().deserialize(parsedPlaceholder);
+
+            // Finally, return the tag instance to insert the placeholder!
+            return Tag.selfClosingInserting(componentPlaceholder);
+        });
+    }
+
+    /**
+     * Credit to mbaxter and the <a href="https://docs.advntr.dev/faq.html#how-can-i-use-bukkits-placeholderapi-in-minimessage-messages">Adventure Wiki</a>.
+     * Creates a tag resolver capable of resolving PlaceholderAPI tags for a given placeholder.
+     * The tag added is of the format <papi:[papi_placeholder]>. For example, <papi:luckperms_prefix>.
+     *
+     * @param player the placeholder
+     * @return the tag resolver
+     */
+    private static @NotNull TagResolver papiTagOfflinePlayer(final @NotNull OfflinePlayer player) {
         return TagResolver.resolver("papi", (argumentQueue, context) -> {
             // Get the string placeholder that they want to use.
             final String papiPlaceholder = argumentQueue.popOr("papi tag requires an argument").value();
