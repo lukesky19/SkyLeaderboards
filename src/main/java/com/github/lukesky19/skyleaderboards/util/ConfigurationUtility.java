@@ -15,15 +15,23 @@
     You should have received a copy of the GNU Affero General Public License
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
-package com.github.lukesky19.skymodels.configuration.record;
+package com.github.lukesky19.skyleaderboards.util;
 
-import org.spongepowered.configurate.objectmapping.ConfigSerializable;
+import org.jetbrains.annotations.Contract;
+import org.jetbrains.annotations.NotNull;
+import org.spongepowered.configurate.yaml.NodeStyle;
+import org.spongepowered.configurate.yaml.YamlConfigurationLoader;
 
-@ConfigSerializable
-public record Locale(
-        String prefix,
-        String reload,
-        String reloadError,
-        String update,
-        String noPermission,
-        String unknownArgument) {}
+import java.nio.file.Path;
+
+public class ConfigurationUtility {
+    @Contract("_ -> new")
+    @NotNull
+    public YamlConfigurationLoader getYamlConfigurationLoader(Path path) {
+        return YamlConfigurationLoader.builder()
+                .nodeStyle(NodeStyle.BLOCK)
+                .path(path)
+                .indent(4)
+                .build();
+    }
+}

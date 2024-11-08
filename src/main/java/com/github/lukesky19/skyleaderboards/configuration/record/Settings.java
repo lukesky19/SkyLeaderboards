@@ -15,32 +15,10 @@
     You should have received a copy of the GNU Affero General Public License
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
-package com.github.lukesky19.skymodels.configuration.record;
+package com.github.lukesky19.skyleaderboards.configuration.record;
 
 import org.spongepowered.configurate.objectmapping.ConfigSerializable;
 
-import java.util.HashMap;
-
 @ConfigSerializable
-public record Data(HashMap<Integer, Head> heads, HashMap<Integer, Sign> signs, HashMap<Integer, NPC> npcs) {
-    @ConfigSerializable
-    public record Head(Location location, String placeholder) {}
-    @ConfigSerializable
-    public record Sign(Location location, String placeholder, Lines lines) {}
-    @ConfigSerializable
-    public record NPC(Location location, String placeholder) {}
-
-    @ConfigSerializable
-    public record Location(
-            String world,
-            Double x,
-            Double y,
-            Double z) {}
-
-    @ConfigSerializable
-    public record Lines(
-            String one,
-            String two,
-            String three,
-            String four) {}
+public record Settings(String locale) {
 }

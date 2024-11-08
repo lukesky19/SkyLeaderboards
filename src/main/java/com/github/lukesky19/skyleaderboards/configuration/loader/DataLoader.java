@@ -15,11 +15,11 @@
     You should have received a copy of the GNU Affero General Public License
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
-package com.github.lukesky19.skymodels.configuration.loader;
+package com.github.lukesky19.skyleaderboards.configuration.loader;
 
-import com.github.lukesky19.skymodels.SkyLeaderboards;
-import com.github.lukesky19.skymodels.configuration.record.Data;
-import com.github.lukesky19.skymodels.util.ConfigurationUtility;
+import com.github.lukesky19.skyleaderboards.SkyLeaderboards;
+import com.github.lukesky19.skyleaderboards.configuration.record.Data;
+import com.github.lukesky19.skyleaderboards.util.ConfigurationUtility;
 import org.spongepowered.configurate.ConfigurateException;
 import org.spongepowered.configurate.yaml.YamlConfigurationLoader;
 

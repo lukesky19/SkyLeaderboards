@@ -15,13 +15,13 @@
     You should have received a copy of the GNU Affero General Public License
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
-package com.github.lukesky19.skymodels;
+package com.github.lukesky19.skyleaderboards;
 
 import com.destroystokyo.paper.profile.PlayerProfile;
-import com.github.lukesky19.skymodels.configuration.loader.DataLoader;
-import com.github.lukesky19.skymodels.configuration.record.Data;
-import com.github.lukesky19.skymodels.util.FormatUtil;
-import com.github.lukesky19.skymodels.util.PlaceholderAPIUtil;
+import com.github.lukesky19.skyleaderboards.configuration.loader.DataLoader;
+import com.github.lukesky19.skyleaderboards.configuration.record.Data;
+import com.github.lukesky19.skyleaderboards.util.FormatUtil;
+import com.github.lukesky19.skyleaderboards.util.PlaceholderAPIUtil;
 import net.citizensnpcs.api.CitizensAPI;
 import net.citizensnpcs.api.npc.NPC;
 import net.citizensnpcs.trait.SkinTrait;
@@ -32,16 +32,19 @@ import org.bukkit.block.Skull;
 import org.bukkit.block.sign.Side;
 import org.bukkit.block.sign.SignSide;
 import org.bukkit.entity.Entity;
-import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitTask;
 
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
+import java.util.UUID;
 
 public class DataManager {
     private final SkyLeaderboards skyLeaderboards;
     private final DataLoader dataLoader;
     private BukkitTask task;
+
+    private final HashMap<UUID, PlayerProfile> playerProfiles = new HashMap<>();
 
     public DataManager(SkyLeaderboards skyLeaderboards, DataLoader dataLoader) {
         this.skyLeaderboards = skyLeaderboards;
@@ -49,24 +52,33 @@ public class DataManager {
     }
 
     public void update() {
-        if(!skyLeaderboards.isPluginEnabled()) return;
-        if(skyLeaderboards.getServer().getOnlinePlayers().isEmpty()) return;
-        Player player = skyLeaderboards.getServer().getOnlinePlayers().stream().toList().getFirst();
+        if (!skyLeaderboards.isPluginEnabled()) return;
 
         Data data = dataLoader.getData();
 
-        for(Map.Entry<Integer, Data.Head> headEntry : data.heads().entrySet()) {
+        for (Map.Entry<Integer, Data.Head> headEntry : data.heads().entrySet()) {
             Data.Head headData = headEntry.getValue();
             World world = skyLeaderboards.getServer().getWorld(headData.location().world());
             Location loc = new Location(world, headData.location().x(), headData.location().y(), headData.location().z());
 
             BlockState blockState = Objects.requireNonNull(world).getBlockState(loc);
-            if(blockState instanceof Skull skull) {
-                String playerName = PlaceholderAPIUtil.parsePlaceholders(player, headData.placeholder());
-                Player skullPlayer = skyLeaderboards.getServer().getPlayer(playerName);
+            if (blockState instanceof Skull skull) {
+                String playerName = PlaceholderAPIUtil.parsePlaceholders(null, headData.placeholder());
+                if (!playerName.isEmpty() && !playerName.equals(headData.placeholder())) {
+                    OfflinePlayer skullPlayer = skyLeaderboards.getServer().getOfflinePlayer(playerName);
+                    UUID uuid = skullPlayer.getUniqueId();
 
-                if(skullPlayer != null) {
-                    PlayerProfile playerProfile = skullPlayer.getPlayerProfile();
+                    if(!playerProfiles.containsKey(uuid) && skullPlayer.isOnline() && skullPlayer.isConnected()) {
+                        playerProfiles.put(uuid, skullPlayer.getPlayerProfile());
+                    }
+
+                    PlayerProfile playerProfile;
+                    if(playerProfiles.containsKey(uuid)) {
+                        playerProfile = playerProfiles.get(uuid);
+                    } else {
+                        playerProfile = skullPlayer.getPlayerProfile();
+                    }
+
                     skull.setPlayerProfile(playerProfile);
                     skull.update(true);
                 }
@@ -80,14 +92,15 @@ public class DataManager {
 
             BlockState blockState = Objects.requireNonNull(world).getBlockState(loc);
             if(blockState instanceof Sign sign) {
-                String playerName = PlaceholderAPIUtil.parsePlaceholders(player, signData.placeholder());
-                Player signPlayer = skyLeaderboards.getServer().getPlayer(playerName);
-                if(signPlayer != null) {
+                String playerName = PlaceholderAPIUtil.parsePlaceholders(null, signData.placeholder());
+                if(!playerName.isEmpty()) {
+                    OfflinePlayer signPlayer = skyLeaderboards.getServer().getOfflinePlayer(playerName);
+
                     SignSide signSide = sign.getSide(Side.FRONT);
-                    signSide.line(0, FormatUtil.format(player, signData.lines().one()));
-                    signSide.line(1, FormatUtil.format(player, signData.lines().two()));
-                    signSide.line(2, FormatUtil.format(player, signData.lines().three()));
-                    signSide.line(3, FormatUtil.format(player, signData.lines().four()));
+                    signSide.line(0, FormatUtil.format(signPlayer, signData.lines().one()));
+                    signSide.line(1, FormatUtil.format(signPlayer, signData.lines().two()));
+                    signSide.line(2, FormatUtil.format(signPlayer, signData.lines().three()));
+                    signSide.line(3, FormatUtil.format(signPlayer, signData.lines().four()));
                     sign.update(true);
                 }
             }
@@ -106,10 +119,9 @@ public class DataManager {
             }
 
             if(npc != null) {
-                String skinPlayerName = PlaceholderAPIUtil.parsePlaceholders(player, npcData.placeholder());
-                Player skinPlayer = skyLeaderboards.getServer().getPlayer(skinPlayerName);
-                if(skinPlayer != null) {
-                    npc.getOrAddTrait(SkinTrait.class).setSkinPersistent(skinPlayer);
+                String skinPlayerName = PlaceholderAPIUtil.parsePlaceholders(null, npcData.placeholder());
+                if(!skinPlayerName.isEmpty() && !skinPlayerName.equals(npcData.placeholder())) {
+                    npc.getOrAddTrait(SkinTrait.class).setSkinName(skinPlayerName);
                 }
             }
         }
