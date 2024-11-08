@@ -44,9 +44,9 @@ Q: Is Folia supported?
 
 A: There is no Folia support at this time. I may look into it in the future though.
 
-Q: My signs, heads, or NPC skins aren't updating!
+Q: My heads don't have the correct skin!
 
-A: Any signs, heads, or NPC skins will only update if the associated player is online.
+A: Player Heads will only update with the proper skin if the player has been online before the last update and their PlayerProfile is cached.
 
 ## Issues or Bugs
 * Create a new GitHub Issue describing your issue.
