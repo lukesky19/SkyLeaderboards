@@ -32,6 +32,7 @@ import org.bukkit.block.Skull;
 import org.bukkit.block.sign.Side;
 import org.bukkit.block.sign.SignSide;
 import org.bukkit.entity.Entity;
+import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitTask;
 
 import java.util.HashMap;
@@ -53,6 +54,9 @@ public class DataManager {
 
     public void update() {
         if (!skyLeaderboards.isPluginEnabled()) return;
+        if(skyLeaderboards.getServer().getOnlinePlayers().isEmpty()) return;
+
+        Player firstPlayer = skyLeaderboards.getServer().getOnlinePlayers().stream().toList().getFirst();
 
         Data data = dataLoader.getData();
 
@@ -63,7 +67,7 @@ public class DataManager {
 
             BlockState blockState = Objects.requireNonNull(world).getBlockState(loc);
             if (blockState instanceof Skull skull) {
-                String playerName = PlaceholderAPIUtil.parsePlaceholders(null, headData.placeholder());
+                String playerName = PlaceholderAPIUtil.parsePlaceholders(firstPlayer, headData.placeholder());
                 if (!playerName.isEmpty() && !playerName.equals(headData.placeholder())) {
                     OfflinePlayer skullPlayer = skyLeaderboards.getServer().getOfflinePlayer(playerName);
                     UUID uuid = skullPlayer.getUniqueId();
@@ -92,8 +96,8 @@ public class DataManager {
 
             BlockState blockState = Objects.requireNonNull(world).getBlockState(loc);
             if(blockState instanceof Sign sign) {
-                String playerName = PlaceholderAPIUtil.parsePlaceholders(null, signData.placeholder());
-                if(!playerName.isEmpty()) {
+                String playerName = PlaceholderAPIUtil.parsePlaceholders(firstPlayer, signData.placeholder());
+                if(!playerName.isEmpty() && !playerName.equalsIgnoreCase(signData.placeholder())) {
                     OfflinePlayer signPlayer = skyLeaderboards.getServer().getOfflinePlayer(playerName);
 
                     SignSide signSide = sign.getSide(Side.FRONT);
@@ -119,7 +123,7 @@ public class DataManager {
             }
 
             if(npc != null) {
-                String skinPlayerName = PlaceholderAPIUtil.parsePlaceholders(null, npcData.placeholder());
+                String skinPlayerName = PlaceholderAPIUtil.parsePlaceholders(firstPlayer, npcData.placeholder());
                 if(!skinPlayerName.isEmpty() && !skinPlayerName.equals(npcData.placeholder())) {
                     npc.getOrAddTrait(SkinTrait.class).setSkinName(skinPlayerName);
                 }
