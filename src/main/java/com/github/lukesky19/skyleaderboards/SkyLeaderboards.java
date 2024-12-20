@@ -21,11 +21,10 @@ import com.github.lukesky19.skyleaderboards.command.SkyLeaderboardsCommand;
 import com.github.lukesky19.skyleaderboards.configuration.loader.DataLoader;
 import com.github.lukesky19.skyleaderboards.configuration.loader.LocaleLoader;
 import com.github.lukesky19.skyleaderboards.configuration.loader.SettingsLoader;
-import com.github.lukesky19.skyleaderboards.util.ConfigurationUtility;
-import org.bukkit.Bukkit;
+import io.papermc.paper.plugin.lifecycle.event.types.LifecycleEvents;
 import org.bukkit.plugin.java.JavaPlugin;
 
-import java.util.Objects;
+import java.util.List;
 
 public final class SkyLeaderboards extends JavaPlugin {
     private SettingsLoader settingsLoader;
@@ -45,20 +44,18 @@ public final class SkyLeaderboards extends JavaPlugin {
 
     @Override
     public void onEnable() {
-        ConfigurationUtility configurationUtility = new ConfigurationUtility();
-
-        this.settingsLoader = new SettingsLoader(this, configurationUtility);
-        this.localeLoader = new LocaleLoader(this, configurationUtility, this.settingsLoader);
-        this.dataLoader = new DataLoader(this, configurationUtility);
+        this.settingsLoader = new SettingsLoader(this);
+        this.localeLoader = new LocaleLoader(this, this.settingsLoader);
+        this.dataLoader = new DataLoader(this);
         this.dataManager = new DataManager(this, dataLoader);
         SkyLeaderboardsCommand skyLeaderboardsCommand = new SkyLeaderboardsCommand(this, localeLoader, dataManager);
 
-        Objects.requireNonNull(Bukkit.getPluginCommand("skyleaderboards")).setExecutor(skyLeaderboardsCommand);
-        Objects.requireNonNull(Bukkit.getPluginCommand("slb")).setExecutor(skyLeaderboardsCommand);
-        Objects.requireNonNull(Bukkit.getPluginCommand("skyleaderboards")).setTabCompleter(skyLeaderboardsCommand);
-        Objects.requireNonNull(Bukkit.getPluginCommand("slb")).setTabCompleter(skyLeaderboardsCommand);
+        this.getLifecycleManager().registerEventHandler(LifecycleEvents.COMMANDS, commands ->
+                commands.registrar().register(skyLeaderboardsCommand.createCommand(),
+                        "Command to manage the skyleaderboards plugin.", List.of("skyleaderboard", "leaderboard", "sklb")));
 
         reload();
+
         dataManager.startUpdateTask();
     }
 

@@ -19,21 +19,19 @@ package com.github.lukesky19.skyleaderboards.configuration.loader;
 
 import com.github.lukesky19.skyleaderboards.SkyLeaderboards;
 import com.github.lukesky19.skyleaderboards.configuration.record.Data;
-import com.github.lukesky19.skyleaderboards.util.ConfigurationUtility;
-import org.spongepowered.configurate.ConfigurateException;
-import org.spongepowered.configurate.yaml.YamlConfigurationLoader;
+import com.github.lukesky19.skylib.config.ConfigurationUtility;
+import com.github.lukesky19.skylib.libs.configurate.ConfigurateException;
+import com.github.lukesky19.skylib.libs.configurate.yaml.YamlConfigurationLoader;
 
 import java.io.File;
 import java.nio.file.Path;
 
 public class DataLoader {
     final SkyLeaderboards skyLeaderboards;
-    final ConfigurationUtility configurationUtility;
     Data data;
 
-    public DataLoader(SkyLeaderboards skyLeaderboards, ConfigurationUtility configurationUtility) {
+    public DataLoader(SkyLeaderboards skyLeaderboards) {
         this.skyLeaderboards = skyLeaderboards;
-        this.configurationUtility = configurationUtility;
     }
 
     public Data getData() {
@@ -47,7 +45,7 @@ public class DataLoader {
             skyLeaderboards.saveResource("data.yml", false);
         }
 
-        YamlConfigurationLoader loader = configurationUtility.getYamlConfigurationLoader(path);
+        YamlConfigurationLoader loader = ConfigurationUtility.getYamlConfigurationLoader(path);
         try {
             data = loader.load().get(Data.class);
         } catch (ConfigurateException e) {

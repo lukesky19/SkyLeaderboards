@@ -19,11 +19,11 @@ package com.github.lukesky19.skyleaderboards.configuration.loader;
 
 import com.github.lukesky19.skyleaderboards.SkyLeaderboards;
 import com.github.lukesky19.skyleaderboards.configuration.record.Locale;
-import com.github.lukesky19.skyleaderboards.util.ConfigurationUtility;
+import com.github.lukesky19.skylib.config.ConfigurationUtility;
+import com.github.lukesky19.skylib.libs.configurate.ConfigurateException;
+import com.github.lukesky19.skylib.libs.configurate.yaml.YamlConfigurationLoader;
 import net.kyori.adventure.text.logger.slf4j.ComponentLogger;
 import net.kyori.adventure.text.minimessage.MiniMessage;
-import org.spongepowered.configurate.ConfigurateException;
-import org.spongepowered.configurate.yaml.YamlConfigurationLoader;
 
 import java.io.File;
 import java.nio.file.Path;
@@ -31,7 +31,6 @@ import java.nio.file.Path;
 public class LocaleLoader {
     final SkyLeaderboards skyLeaderboards;
     final SettingsLoader settingsLoader;
-    final ConfigurationUtility configurationUtility;
     Locale locale;
     private final Locale defaultLocale = new Locale(
             "<aqua><bold>SkyLeaderboards</bold></aqua><gray> ▪ </gray>",
@@ -41,9 +40,8 @@ public class LocaleLoader {
             "<red>You do not have permission for this command.<red>",
             "<red>Unknown argument.</red>");
 
-    public LocaleLoader(SkyLeaderboards skyLeaderboards, ConfigurationUtility configurationUtility, SettingsLoader settingsLoader) {
+    public LocaleLoader(SkyLeaderboards skyLeaderboards, SettingsLoader settingsLoader) {
         this.skyLeaderboards = skyLeaderboards;
-        this.configurationUtility = configurationUtility;
         this.settingsLoader = settingsLoader;
     }
 
@@ -70,7 +68,7 @@ public class LocaleLoader {
         String localeString = settingsLoader.getSettingsConfig().locale();
         Path path = Path.of(skyLeaderboards.getDataFolder() + File.separator + "locale" + File.separator + (localeString + ".yml"));
 
-        YamlConfigurationLoader loader = configurationUtility.getYamlConfigurationLoader(path);
+        YamlConfigurationLoader loader = ConfigurationUtility.getYamlConfigurationLoader(path);
         try {
             locale = loader.load().get(Locale.class);
         } catch (ConfigurateException e) {

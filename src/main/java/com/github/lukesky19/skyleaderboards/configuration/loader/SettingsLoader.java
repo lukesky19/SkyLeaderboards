@@ -19,21 +19,19 @@ package com.github.lukesky19.skyleaderboards.configuration.loader;
 
 import com.github.lukesky19.skyleaderboards.SkyLeaderboards;
 import com.github.lukesky19.skyleaderboards.configuration.record.Settings;
-import com.github.lukesky19.skyleaderboards.util.ConfigurationUtility;
-import org.spongepowered.configurate.ConfigurateException;
-import org.spongepowered.configurate.yaml.YamlConfigurationLoader;
+import com.github.lukesky19.skylib.config.ConfigurationUtility;
+import com.github.lukesky19.skylib.libs.configurate.ConfigurateException;
+import com.github.lukesky19.skylib.libs.configurate.yaml.YamlConfigurationLoader;
 
 import java.io.File;
 import java.nio.file.Path;
 
 public class SettingsLoader {
     final SkyLeaderboards skyLeaderboards;
-    final ConfigurationUtility configurationUtility;
     Settings settingsConfig;
 
-    public SettingsLoader(SkyLeaderboards skyLeaderboards, ConfigurationUtility configurationUtility) {
+    public SettingsLoader(SkyLeaderboards skyLeaderboards) {
         this.skyLeaderboards = skyLeaderboards;
-        this.configurationUtility = configurationUtility;
     }
 
     public Settings getSettingsConfig() {
@@ -47,7 +45,7 @@ public class SettingsLoader {
             skyLeaderboards.saveResource("settings.yml", false);
         }
 
-        YamlConfigurationLoader loader = configurationUtility.getYamlConfigurationLoader(path);
+        YamlConfigurationLoader loader = ConfigurationUtility.getYamlConfigurationLoader(path);
         try {
             settingsConfig = loader.load().get(Settings.class);
         } catch (ConfigurateException e) {

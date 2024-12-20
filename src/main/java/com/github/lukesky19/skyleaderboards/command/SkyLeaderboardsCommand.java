@@ -21,21 +21,15 @@ import com.github.lukesky19.skyleaderboards.DataManager;
 import com.github.lukesky19.skyleaderboards.SkyLeaderboards;
 import com.github.lukesky19.skyleaderboards.configuration.loader.LocaleLoader;
 import com.github.lukesky19.skyleaderboards.configuration.record.Locale;
-import com.github.lukesky19.skyleaderboards.util.FormatUtil;
-import net.kyori.adventure.text.logger.slf4j.ComponentLogger;
-import net.kyori.adventure.text.minimessage.MiniMessage;
-import org.bukkit.command.Command;
-import org.bukkit.command.CommandExecutor;
+import com.github.lukesky19.skylib.format.FormatUtil;
+import com.mojang.brigadier.builder.LiteralArgumentBuilder;
+import com.mojang.brigadier.tree.LiteralCommandNode;
+import io.papermc.paper.command.brigadier.CommandSourceStack;
+import io.papermc.paper.command.brigadier.Commands;
 import org.bukkit.command.CommandSender;
-import org.bukkit.command.TabCompleter;
 import org.bukkit.entity.Player;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
-import java.util.ArrayList;
-import java.util.List;
-
-public class SkyLeaderboardsCommand implements CommandExecutor, TabCompleter {
+public class SkyLeaderboardsCommand {
     private final SkyLeaderboards skyLeaderboards;
     private final LocaleLoader localeLoader;
     private final DataManager dataManager;
@@ -46,90 +40,67 @@ public class SkyLeaderboardsCommand implements CommandExecutor, TabCompleter {
         this.dataManager = dataManager;
     }
 
-    @Override
-    public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, @NotNull String[] args) {
-        Locale locale;
-        if (!skyLeaderboards.isPluginEnabled()) {
-            locale = localeLoader.getDefaultLocale();
-        } else {
-            locale = localeLoader.getLocale();
-        }
+    public LiteralCommandNode<CommandSourceStack> createCommand() {
+        LiteralArgumentBuilder<CommandSourceStack> builder = Commands.literal("skyleaderboards");
 
-        if (sender instanceof Player player) {
-            if (player.hasPermission("skyleaderboards.command.skyleaderboards")) {
-                if (args.length == 1) {
-                    switch (args[0]) {
-                        case "reload" -> {
-                            if (sender.hasPermission("skyleaderboards.command.skyleaderboards.reload")) {
-                                skyLeaderboards.reload();
-                                if (!skyLeaderboards.isPluginEnabled()) {
-                                    locale = localeLoader.getDefaultLocale();
-                                } else {
-                                    locale = localeLoader.getLocale();
-                                }
+        builder.then(Commands.literal("reload")
+                .executes(ctx -> {
+                    Locale locale = localeLoader.getLocale();
+                    CommandSender sender = ctx.getSource().getSender();
 
-                                player.sendMessage(FormatUtil.format(player, locale.prefix() + locale.reload()));
-                                return true;
-                            }
-                        }
+                    if(sender instanceof Player) {
+                        if (sender.hasPermission("skyleaderboards.command.skyleaderboards")
+                                && sender.hasPermission("skyleaderboards.command.skyleaderboards.reload")) {
+                            skyLeaderboards.reload();
 
-                        case "update" -> {
-                            if (sender.hasPermission("skyleaderboards.command.skyleaderboards.update")) {
-                                player.sendMessage(FormatUtil.format(player, locale.prefix() + locale.update()));
-                                dataManager.update();
-                                return true;
-                            }
-                        }
-                    }
-                } else {
-                    player.sendMessage(FormatUtil.format(player, locale.prefix() + locale.unknownArgument()));
-                    return false;
-                }
-            } else {
-                player.sendMessage(FormatUtil.format(player, locale.prefix() + locale.noPermission()));
-                return false;
-            }
-        } else {
-            ComponentLogger logger = skyLeaderboards.getComponentLogger();
-            if (args.length == 1) {
-                switch (args[0]) {
-                    case "reload" -> {
-                        skyLeaderboards.reload();
-                        if (!skyLeaderboards.isPluginEnabled()) {
-                            locale = localeLoader.getDefaultLocale();
-                        } else {
                             locale = localeLoader.getLocale();
-                        }
 
-                        logger.info(FormatUtil.format(locale.reload()));
-                        return true;
+                            sender.sendMessage(FormatUtil.format(locale.prefix() + locale.reload()));
+
+                            return 1;
+                        } else {
+                            sender.sendMessage(FormatUtil.format(locale.prefix() + locale.noPermission()));
+
+                            return 0;
+                        }
+                    } else {
+                        skyLeaderboards.reload();
+
+                        locale = localeLoader.getLocale();
+
+                        skyLeaderboards.getComponentLogger().info(FormatUtil.format(locale.reload()));
+
+                        return 1;
                     }
+                }));
 
-                    case "update" -> {
-                        if(!skyLeaderboards.isPluginEnabled()) {
-                            logger.error(MiniMessage.miniMessage().deserialize("<red>Cannot update signs, heads, and NPCs due to a config error.</red>"));
-                            logger.error(MiniMessage.miniMessage().deserialize("<red>Please check your server's console.</red>"));
-                            return false;
+        builder.then(Commands.literal("update")
+                .executes(ctx -> {
+                    Locale locale = localeLoader.getLocale();
+                    CommandSender sender = ctx.getSource().getSender();
+
+                    if(sender instanceof Player) {
+                        if (sender.hasPermission("skyleaderboards.command.skyleaderboards")
+                                && sender.hasPermission("skyleaderboards.command.skyleaderboards.update")) {
+                            dataManager.update();
+
+                            sender.sendMessage(FormatUtil.format(locale.prefix() + locale.update()));
+
+                            return 1;
+                        } else {
+                            sender.sendMessage(FormatUtil.format(locale.prefix() + locale.noPermission()));
+
+                            return 0;
                         }
-
-                        logger.info(FormatUtil.format(locale.update()));
+                    } else {
                         dataManager.update();
-                        return true;
+
+                        skyLeaderboards.getComponentLogger().info(FormatUtil.format(locale.update()));
+
+                        return 1;
                     }
-                }
-            }
-        }
+                }));
 
-        return false;
-    }
-
-    @Nullable
-    public List<String> onTabComplete(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, @NotNull String[] args) {
-        ArrayList<String> subCmds = new ArrayList<>();
-
-        if(sender.hasPermission("skyleaderboards.command.skyleaderboards.reload")) subCmds.add("reload");
-        if(sender.hasPermission("skyleaderboards.command.skyleaderboards.update")) subCmds.add("update");
-
-        return subCmds;
+        return builder.build();
     }
 }

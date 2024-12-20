@@ -4,7 +4,7 @@ plugins {
 }
 
 group = "com.github.lukesky19"
-version = "1.1.1"
+version = "1.2.0"
 
 repositories {
     mavenCentral()
@@ -20,17 +20,14 @@ repositories {
     maven("https://repo.extendedclip.com/content/repositories/placeholderapi/") {
         name = "PlaceholderAPI Repo"
     }
+    mavenLocal()
 }
 
 dependencies {
-    compileOnly("io.papermc.paper:paper-api:1.21-R0.1-SNAPSHOT")
-    compileOnly("net.kyori:adventure-api:4.17.0")
-    compileOnly("net.kyori:adventure-text-minimessage:4.17.0")
+    compileOnly("io.papermc.paper:paper-api:1.21.4-R0.1-SNAPSHOT")
+    compileOnly("com.github.lukesky19:SkyLib:1.1.0")
     compileOnly("me.clip:placeholderapi:2.11.6")
-    compileOnly("net.citizensnpcs:citizens-main:2.0.35-SNAPSHOT") {
-        exclude("*", "*")
-    }
-    implementation("org.spongepowered:configurate-yaml:4.1.2")
+    compileOnly("net.citizensnpcs:citizens-main:2.0.37-SNAPSHOT")
 }
 
 java {
@@ -50,15 +47,9 @@ tasks.processResources {
     }
 }
 
-tasks.shadowJar {
+tasks.jar {
     manifest {
         attributes["paperweight-mappings-namespace"] = "mojang"
     }
     archiveClassifier.set("")
-    relocate("org.spongepowered.configurate", "com.github.lukesky19.skyleaderboards.libs.configurate")
-    minimize()
-}
-
-tasks.build {
-    dependsOn(tasks.shadowJar)
 }
