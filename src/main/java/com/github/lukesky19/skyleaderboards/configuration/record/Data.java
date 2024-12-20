@@ -17,30 +17,32 @@
 */
 package com.github.lukesky19.skyleaderboards.configuration.record;
 
-import org.spongepowered.configurate.objectmapping.ConfigSerializable;
+import com.github.lukesky19.skylib.libs.configurate.objectmapping.ConfigSerializable;
 
+import javax.annotation.CheckForNull;
+import javax.annotation.Nullable;
 import java.util.HashMap;
 
 @ConfigSerializable
 public record Data(HashMap<Integer, Head> heads, HashMap<Integer, Sign> signs, HashMap<Integer, NPC> npcs) {
     @ConfigSerializable
-    public record Head(Location location, String placeholder) {}
+    public record Head(Location location, @CheckForNull String placeholder) {}
     @ConfigSerializable
-    public record Sign(Location location, String placeholder, Lines lines) {}
+    public record Sign(Location location, @CheckForNull String placeholder, Lines lines) {}
     @ConfigSerializable
-    public record NPC(Location location, String placeholder) {}
+    public record NPC(Location location, @CheckForNull String placeholder) {}
 
     @ConfigSerializable
     public record Location(
-            String world,
-            Double x,
-            Double y,
-            Double z) {}
+            @Nullable String world,
+            double x,
+            double y,
+            double z) {}
 
     @ConfigSerializable
     public record Lines(
-            String one,
-            String two,
-            String three,
-            String four) {}
+            @CheckForNull String one,
+            @CheckForNull String two,
+            @CheckForNull String three,
+            @CheckForNull String four) {}
 }

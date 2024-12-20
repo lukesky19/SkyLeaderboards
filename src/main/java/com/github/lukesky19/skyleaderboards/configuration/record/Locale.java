@@ -17,7 +17,7 @@
 */
 package com.github.lukesky19.skyleaderboards.configuration.record;
 
-import org.spongepowered.configurate.objectmapping.ConfigSerializable;
+import com.github.lukesky19.skylib.libs.configurate.objectmapping.ConfigSerializable;
 
 @ConfigSerializable
 public record Locale(
@@ -26,4 +26,6 @@ public record Locale(
         String reloadError,
         String update,
         String noPermission,
-        String unknownArgument) {}
+        String invalidWorld,
+        String invalidBlock,
+        String invalidNpc) {}

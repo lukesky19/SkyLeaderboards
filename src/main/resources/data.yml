@@ -5,7 +5,7 @@ heads:
       x: 0
       y: 0
       z: 0
-    # This should resolve to a placeholder name so that it can be used to set the head texture!
+    # This should resolve to a player's name so that it can be used to set the head texture!
     placeholder: ""
 signs:
   0:
@@ -14,7 +14,7 @@ signs:
       x: 0
       y: 0
       z: 0
-    # This should be a placeholder resolve to a placeholder name so that it can be used to check if the player is online!
+    # This should be a placeholder resolve to a player's name so that it can be used to check if the player is online!
     placeholder: ""
     lines:
       one: ""
@@ -28,5 +28,5 @@ npcs:
       x: 0
       y: 0
       z: 0
-    # This should resolve to a placeholder name so that it can be used to set the skin!
+    # This should resolve to a player's name so that it can be used to set the skin!
     placeholder: ""
