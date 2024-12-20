@@ -26,4 +26,6 @@ public record Locale(
         String reloadError,
         String update,
         String noPermission,
-        String unknownArgument) {}
+        String invalidWorld,
+        String invalidBlock,
+        String invalidNpc) {}

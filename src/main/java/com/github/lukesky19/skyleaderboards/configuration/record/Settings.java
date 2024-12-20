@@ -19,5 +19,7 @@ package com.github.lukesky19.skyleaderboards.configuration.record;
 
 import com.github.lukesky19.skylib.libs.configurate.objectmapping.ConfigSerializable;
 
+import javax.annotation.CheckForNull;
+
 @ConfigSerializable
-public record Settings(String locale) {}
+public record Settings(@CheckForNull String locale) {}

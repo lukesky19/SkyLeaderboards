@@ -18,37 +18,36 @@
 package com.github.lukesky19.skyleaderboards;
 
 import com.github.lukesky19.skyleaderboards.command.SkyLeaderboardsCommand;
-import com.github.lukesky19.skyleaderboards.configuration.loader.DataLoader;
-import com.github.lukesky19.skyleaderboards.configuration.loader.LocaleLoader;
-import com.github.lukesky19.skyleaderboards.configuration.loader.SettingsLoader;
+import com.github.lukesky19.skyleaderboards.configuration.loader.DataManager;
+import com.github.lukesky19.skyleaderboards.configuration.loader.LocaleManager;
+import com.github.lukesky19.skyleaderboards.configuration.loader.SettingsManager;
+import com.github.lukesky19.skyleaderboards.manager.HeadManager;
+import com.github.lukesky19.skyleaderboards.manager.NPCManager;
+import com.github.lukesky19.skyleaderboards.manager.SignManager;
+import com.github.lukesky19.skyleaderboards.manager.TaskManager;
 import io.papermc.paper.plugin.lifecycle.event.types.LifecycleEvents;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.util.List;
 
 public final class SkyLeaderboards extends JavaPlugin {
-    private SettingsLoader settingsLoader;
-    private LocaleLoader localeLoader;
-    private DataLoader dataLoader;
+    private SettingsManager settingsManager;
+    private LocaleManager localeManager;
     private DataManager dataManager;
-
-    Boolean pluginState = true;
-
-    public void setPluginState(Boolean pluginState) {
-        this.pluginState = pluginState;
-    }
-
-    public Boolean isPluginEnabled() {
-        return this.pluginState;
-    }
+    private TaskManager taskManager;
 
     @Override
     public void onEnable() {
-        this.settingsLoader = new SettingsLoader(this);
-        this.localeLoader = new LocaleLoader(this, this.settingsLoader);
-        this.dataLoader = new DataLoader(this);
-        this.dataManager = new DataManager(this, dataLoader);
-        SkyLeaderboardsCommand skyLeaderboardsCommand = new SkyLeaderboardsCommand(this, localeLoader, dataManager);
+        this.settingsManager = new SettingsManager(this);
+        this.localeManager = new LocaleManager(this, this.settingsManager);
+        this.dataManager = new DataManager(this);
+
+        HeadManager headManager = new HeadManager(this, localeManager, dataManager);
+        NPCManager npcManager = new NPCManager(this, localeManager, dataManager);
+        SignManager signManager = new SignManager(this, localeManager, dataManager);
+        taskManager = new TaskManager(this, headManager, npcManager, signManager);
+
+        SkyLeaderboardsCommand skyLeaderboardsCommand = new SkyLeaderboardsCommand(this, localeManager, headManager, npcManager, signManager);
 
         this.getLifecycleManager().registerEventHandler(LifecycleEvents.COMMANDS, commands ->
                 commands.registrar().register(skyLeaderboardsCommand.createCommand(),
@@ -56,18 +55,17 @@ public final class SkyLeaderboards extends JavaPlugin {
 
         reload();
 
-        dataManager.startUpdateTask();
+        taskManager.startUpdateTask();
     }
 
     @Override
     public void onDisable() {
-        dataManager.stopUpdateTask();
+        taskManager.stopUpdateTask();
     }
 
     public void reload() {
-        pluginState = true;
-        this.settingsLoader.reload();
-        this.localeLoader.reload();
-        this.dataLoader.reload();
+        this.settingsManager.reload();
+        this.localeManager.reload();
+        this.dataManager.reload();
     }
 }

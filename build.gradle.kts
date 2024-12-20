@@ -1,6 +1,5 @@
 plugins {
     java
-    id("com.gradleup.shadow") version "8.3.1"
 }
 
 group = "com.github.lukesky19"
@@ -32,10 +31,6 @@ dependencies {
 
 java {
     toolchain.languageVersion.set(JavaLanguageVersion.of(21))
-}
-
-tasks.build {
-    dependsOn("shadowJar")
 }
 
 tasks.processResources {

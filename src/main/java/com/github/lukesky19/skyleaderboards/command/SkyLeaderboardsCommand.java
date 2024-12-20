@@ -17,10 +17,12 @@
 */
 package com.github.lukesky19.skyleaderboards.command;
 
-import com.github.lukesky19.skyleaderboards.DataManager;
 import com.github.lukesky19.skyleaderboards.SkyLeaderboards;
-import com.github.lukesky19.skyleaderboards.configuration.loader.LocaleLoader;
+import com.github.lukesky19.skyleaderboards.configuration.loader.LocaleManager;
 import com.github.lukesky19.skyleaderboards.configuration.record.Locale;
+import com.github.lukesky19.skyleaderboards.manager.HeadManager;
+import com.github.lukesky19.skyleaderboards.manager.NPCManager;
+import com.github.lukesky19.skyleaderboards.manager.SignManager;
 import com.github.lukesky19.skylib.format.FormatUtil;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.tree.LiteralCommandNode;
@@ -31,13 +33,22 @@ import org.bukkit.entity.Player;
 
 public class SkyLeaderboardsCommand {
     private final SkyLeaderboards skyLeaderboards;
-    private final LocaleLoader localeLoader;
-    private final DataManager dataManager;
+    private final LocaleManager localeManager;
+    private final HeadManager headManager;
+    private final NPCManager npcManager;
+    private final SignManager signManager;
 
-    public SkyLeaderboardsCommand(SkyLeaderboards skyLeaderboards, LocaleLoader localeLoader, DataManager dataManager) {
+    public SkyLeaderboardsCommand(
+            SkyLeaderboards skyLeaderboards,
+            LocaleManager localeManager,
+            HeadManager headManager,
+            NPCManager npcManager,
+            SignManager signManager) {
         this.skyLeaderboards = skyLeaderboards;
-        this.localeLoader = localeLoader;
-        this.dataManager = dataManager;
+        this.localeManager = localeManager;
+        this.headManager = headManager;
+        this.npcManager = npcManager;
+        this.signManager = signManager;
     }
 
     public LiteralCommandNode<CommandSourceStack> createCommand() {
@@ -45,7 +56,7 @@ public class SkyLeaderboardsCommand {
 
         builder.then(Commands.literal("reload")
                 .executes(ctx -> {
-                    Locale locale = localeLoader.getLocale();
+                    Locale locale = localeManager.getLocale();
                     CommandSender sender = ctx.getSource().getSender();
 
                     if(sender instanceof Player) {
@@ -53,7 +64,7 @@ public class SkyLeaderboardsCommand {
                                 && sender.hasPermission("skyleaderboards.command.skyleaderboards.reload")) {
                             skyLeaderboards.reload();
 
-                            locale = localeLoader.getLocale();
+                            locale = localeManager.getLocale();
 
                             sender.sendMessage(FormatUtil.format(locale.prefix() + locale.reload()));
 
@@ -66,7 +77,7 @@ public class SkyLeaderboardsCommand {
                     } else {
                         skyLeaderboards.reload();
 
-                        locale = localeLoader.getLocale();
+                        locale = localeManager.getLocale();
 
                         skyLeaderboards.getComponentLogger().info(FormatUtil.format(locale.reload()));
 
@@ -76,13 +87,15 @@ public class SkyLeaderboardsCommand {
 
         builder.then(Commands.literal("update")
                 .executes(ctx -> {
-                    Locale locale = localeLoader.getLocale();
+                    Locale locale = localeManager.getLocale();
                     CommandSender sender = ctx.getSource().getSender();
 
                     if(sender instanceof Player) {
                         if (sender.hasPermission("skyleaderboards.command.skyleaderboards")
                                 && sender.hasPermission("skyleaderboards.command.skyleaderboards.update")) {
-                            dataManager.update();
+                            headManager.update();
+                            npcManager.update();
+                            signManager.update();
 
                             sender.sendMessage(FormatUtil.format(locale.prefix() + locale.update()));
 
@@ -93,7 +106,9 @@ public class SkyLeaderboardsCommand {
                             return 0;
                         }
                     } else {
-                        dataManager.update();
+                        headManager.update();
+                        npcManager.update();
+                        signManager.update();
 
                         skyLeaderboards.getComponentLogger().info(FormatUtil.format(locale.update()));
 

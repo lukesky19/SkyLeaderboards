@@ -18,38 +18,40 @@
 package com.github.lukesky19.skyleaderboards.configuration.loader;
 
 import com.github.lukesky19.skyleaderboards.SkyLeaderboards;
-import com.github.lukesky19.skyleaderboards.configuration.record.Data;
+import com.github.lukesky19.skyleaderboards.configuration.record.Settings;
 import com.github.lukesky19.skylib.config.ConfigurationUtility;
 import com.github.lukesky19.skylib.libs.configurate.ConfigurateException;
 import com.github.lukesky19.skylib.libs.configurate.yaml.YamlConfigurationLoader;
 
+import javax.annotation.CheckForNull;
 import java.io.File;
 import java.nio.file.Path;
 
-public class DataLoader {
+public class SettingsManager {
     final SkyLeaderboards skyLeaderboards;
-    Data data;
+    Settings settingsConfig;
 
-    public DataLoader(SkyLeaderboards skyLeaderboards) {
+    public SettingsManager(SkyLeaderboards skyLeaderboards) {
         this.skyLeaderboards = skyLeaderboards;
     }
 
-    public Data getData() {
-        return data;
+    @CheckForNull
+    public Settings getSettingsConfig() {
+        return settingsConfig;
     }
 
     public void reload() {
-        data = null;
-        Path path = Path.of(skyLeaderboards.getDataFolder() + File.separator + "data.yml");
+        settingsConfig = null;
+
+        Path path = Path.of(skyLeaderboards.getDataFolder() + File.separator + "settings.yml");
         if(!path.toFile().exists()) {
-            skyLeaderboards.saveResource("data.yml", false);
+            skyLeaderboards.saveResource("settings.yml", false);
         }
 
         YamlConfigurationLoader loader = ConfigurationUtility.getYamlConfigurationLoader(path);
         try {
-            data = loader.load().get(Data.class);
+            settingsConfig = loader.load().get(Settings.class);
         } catch (ConfigurateException e) {
-            skyLeaderboards.setPluginState(false);
             throw new RuntimeException(e);
         }
     }
