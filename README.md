@@ -54,21 +54,6 @@ A: There is no Folia support at this time. I may look into it in the future thou
 * Download the plugin [SkyLib](https://github.com/lukesky19/SkyLib/releases).
 * Download the plugin from the releases tab and add it to your server.
 
-## For Developers
-```./gradlew build publishToMavenLocal```
-
-```koitlin
-repositories {
-  mavenLocal()
-}
-```
-
-```koitlin
-dependencies {
-  compileOnly("com.github.lukesky19:SkyShop:2.0.0")
-}
-```
-
 ## Building
 * Go to [SkyLib](https://github.com/lukesky19/SkyLib) and follow the "For Developers" instructions.
 * Then run:
