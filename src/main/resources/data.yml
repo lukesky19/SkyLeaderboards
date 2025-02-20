@@ -14,8 +14,6 @@ signs:
       x: 0
       y: 0
       z: 0
-    # This should be a placeholder resolve to a player's name so that it can be used to check if the player is online!
-    placeholder: ""
     lines:
       one: ""
       two: ""

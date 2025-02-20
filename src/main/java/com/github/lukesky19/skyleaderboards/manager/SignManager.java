@@ -6,12 +6,10 @@ import com.github.lukesky19.skyleaderboards.configuration.loader.LocaleManager;
 import com.github.lukesky19.skyleaderboards.configuration.record.Data;
 import com.github.lukesky19.skyleaderboards.configuration.record.Locale;
 import com.github.lukesky19.skylib.format.FormatUtil;
-import com.github.lukesky19.skylib.format.PlaceholderAPIUtil;
 import net.kyori.adventure.text.logger.slf4j.ComponentLogger;
 import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder;
 import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver;
 import org.bukkit.Location;
-import org.bukkit.OfflinePlayer;
 import org.bukkit.World;
 import org.bukkit.block.Sign;
 import org.bukkit.block.sign.Side;
@@ -48,13 +46,13 @@ public class SignManager {
         if(skyLeaderboards.getServer().getOnlinePlayers().isEmpty()) return;
 
         // Get the plugin's configuration
-        final Data data = dataManager.getData();
+        Data data = dataManager.getData();
         // Get the first player online just in-case a Placeholder requires a player to parse them.
-        final Player firstPlayer = skyLeaderboards.getServer().getOnlinePlayers().stream().toList().getFirst();
+        Player firstPlayer = skyLeaderboards.getServer().getOnlinePlayers().stream().toList().getFirst();
         // Get the ComponentLogger from the plugin.
-        final ComponentLogger logger = skyLeaderboards.getComponentLogger();
+        ComponentLogger logger = skyLeaderboards.getComponentLogger();
         // Get the plugin's locale config.
-        final Locale locale = localeManager.getLocale();
+        Locale locale = localeManager.getLocale();
 
         // Loop through configured signs to update
         data.signs().forEach((key, signData) -> {
@@ -89,38 +87,30 @@ public class SignManager {
             // If the BlockState at the Location is a Sign, attempt to update it
             // Otherwise we log a warning to the console.
             if(world.getBlockState(loc) instanceof Sign sign) {
-                // Parse the placeholder for the given sign data config.
-                String playerName = PlaceholderAPIUtil.parsePlaceholders(firstPlayer, signData.placeholder());
+                // Get the front of the sign
+                SignSide frontSide = sign.getSide(Side.FRONT);
+                SignSide backSide = sign.getSide(Side.BACK);
 
-                // If the placeholder parsed successfully, attempt to update the sign.
-                if(!playerName.isEmpty() && !playerName.equalsIgnoreCase(signData.placeholder())) {
-                    // Get the OfflinePlayer from the player name produced from the placeholder.
-                    OfflinePlayer signPlayer = skyLeaderboards.getServer().getOfflinePlayer(playerName);
-
-                    // Get the front of the sign
-                    SignSide frontSide = sign.getSide(Side.FRONT);
-                    SignSide backSide = sign.getSide(Side.BACK);
-
-                    // Update each line of the sign (front and back) based on the sign data config.
-                    if (signData.lines().one() != null) {
-                        frontSide.line(0, FormatUtil.format(signPlayer, signData.lines().one()));
-                        backSide.line(0, FormatUtil.format(signPlayer, signData.lines().one()));
-                    }
-                    if (signData.lines().two() != null) {
-                        frontSide.line(1, FormatUtil.format(signPlayer, signData.lines().two()));
-                        backSide.line(1, FormatUtil.format(signPlayer, signData.lines().two()));
-                    }
-                    if (signData.lines().three() != null) {
-                        frontSide.line(2, FormatUtil.format(signPlayer, signData.lines().three()));
-                        backSide.line(2, FormatUtil.format(signPlayer, signData.lines().three()));
-                    }
-                    if (signData.lines().four() != null) {
-                        frontSide.line(3, FormatUtil.format(signPlayer, signData.lines().four()));
-                        backSide.line(3, FormatUtil.format(signPlayer, signData.lines().four()));
-                    }
-
-                    sign.update(true);
+                // Update each line of the sign (front and back) based on the sign data config.
+                if (signData.lines().one() != null) {
+                    frontSide.line(0, FormatUtil.format(firstPlayer, signData.lines().one()));
+                    backSide.line(0, FormatUtil.format(firstPlayer, signData.lines().one()));
                 }
+                if (signData.lines().two() != null) {
+                    frontSide.line(1, FormatUtil.format(firstPlayer, signData.lines().two()));
+                    backSide.line(1, FormatUtil.format(firstPlayer, signData.lines().two()));
+                }
+                if (signData.lines().three() != null) {
+                    frontSide.line(2, FormatUtil.format(firstPlayer, signData.lines().three()));
+                    backSide.line(2, FormatUtil.format(firstPlayer, signData.lines().three()));
+                }
+                if (signData.lines().four() != null) {
+                    frontSide.line(3, FormatUtil.format(firstPlayer, signData.lines().four()));
+                    backSide.line(3, FormatUtil.format(firstPlayer, signData.lines().four()));
+                }
+
+                // Update the block state
+                sign.update(true);
             } else {
                 logger.error(FormatUtil.format(locale.invalidBlock(), blockErrorPlaceholders));
             }

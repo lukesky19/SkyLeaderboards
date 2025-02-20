@@ -50,13 +50,13 @@ public class HeadManager {
         if(skyLeaderboards.getServer().getOnlinePlayers().isEmpty()) return;
 
         // Get the plugin's configuration
-        final Data data = dataManager.getData();
+        Data data = dataManager.getData();
         // Get the first player online just in-case a Placeholder requires a player to parse them.
-        final Player firstPlayer = skyLeaderboards.getServer().getOnlinePlayers().stream().toList().getFirst();
+        Player firstPlayer = skyLeaderboards.getServer().getOnlinePlayers().stream().toList().getFirst();
         // Get the ComponentLogger from the plugin.
-        final ComponentLogger logger = skyLeaderboards.getComponentLogger();
+        ComponentLogger logger = skyLeaderboards.getComponentLogger();
         // Get the plugin's locale config.
-        final Locale locale = localeManager.getLocale();
+        Locale locale = localeManager.getLocale();
 
         // Loop through configured heads to update
         data.heads().forEach((key, headData) -> {
@@ -124,7 +124,7 @@ public class HeadManager {
                                 // Cache the player profile
                                 PlayerUtil.cachePlayerProfile(uuid, updatedProfile);
 
-                                // Update the skull async because the Bukkit/Spigot API is not thread safe.
+                                // Update the skull sync because the API is not thread safe.
                                 skyLeaderboards.getServer().getScheduler().runTask(skyLeaderboards, () -> {
                                     skull.setPlayerProfile(updatedProfile);
                                     skull.update(true);

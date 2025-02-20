@@ -19,18 +19,17 @@ package com.github.lukesky19.skyleaderboards.configuration.record;
 
 import com.github.lukesky19.skylib.libs.configurate.objectmapping.ConfigSerializable;
 
-import javax.annotation.CheckForNull;
 import javax.annotation.Nullable;
 import java.util.HashMap;
 
 @ConfigSerializable
 public record Data(HashMap<Integer, Head> heads, HashMap<Integer, Sign> signs, HashMap<Integer, NPC> npcs) {
     @ConfigSerializable
-    public record Head(Location location, @CheckForNull String placeholder) {}
+    public record Head(Location location, @Nullable String placeholder) {}
     @ConfigSerializable
-    public record Sign(Location location, @CheckForNull String placeholder, Lines lines) {}
+    public record Sign(Location location, Lines lines) {}
     @ConfigSerializable
-    public record NPC(Location location, @CheckForNull String placeholder) {}
+    public record NPC(Location location, @Nullable String placeholder) {}
 
     @ConfigSerializable
     public record Location(
@@ -41,8 +40,8 @@ public record Data(HashMap<Integer, Head> heads, HashMap<Integer, Sign> signs, H
 
     @ConfigSerializable
     public record Lines(
-            @CheckForNull String one,
-            @CheckForNull String two,
-            @CheckForNull String three,
-            @CheckForNull String four) {}
+            @Nullable String one,
+            @Nullable String two,
+            @Nullable String three,
+            @Nullable String four) {}
 }
