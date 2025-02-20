@@ -48,13 +48,13 @@ public class NPCManager {
         if(skyLeaderboards.getServer().getOnlinePlayers().isEmpty()) return;
 
         // Get the plugin's configuration
-        final Data data = dataManager.getData();
+        Data data = dataManager.getData();
         // Get the first player online just in-case a Placeholder requires a player to parse them.
-        final Player firstPlayer = skyLeaderboards.getServer().getOnlinePlayers().stream().toList().getFirst();
+        Player firstPlayer = skyLeaderboards.getServer().getOnlinePlayers().stream().toList().getFirst();
         // Get the ComponentLogger from the plugin.
-        final ComponentLogger logger = skyLeaderboards.getComponentLogger();
+        ComponentLogger logger = skyLeaderboards.getComponentLogger();
         // Get the plugin's locale config.
-        final Locale locale = localeManager.getLocale();
+        Locale locale = localeManager.getLocale();
 
         // Loop through configured npcs to update
         data.npcs().forEach((key, npcData) -> {
