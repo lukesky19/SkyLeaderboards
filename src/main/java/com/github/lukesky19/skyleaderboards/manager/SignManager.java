@@ -5,7 +5,7 @@ import com.github.lukesky19.skyleaderboards.configuration.loader.DataManager;
 import com.github.lukesky19.skyleaderboards.configuration.loader.LocaleManager;
 import com.github.lukesky19.skyleaderboards.configuration.record.Data;
 import com.github.lukesky19.skyleaderboards.configuration.record.Locale;
-import com.github.lukesky19.skylib.format.FormatUtil;
+import com.github.lukesky19.skylib.api.adventure.AdventureUtil;
 import net.kyori.adventure.text.logger.slf4j.ComponentLogger;
 import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder;
 import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver;
@@ -63,13 +63,13 @@ public class SignManager {
 
             // Get the World configured and log an error message if it is null
             if(signData.location().world() == null) {
-                logger.error(FormatUtil.format(locale.invalidWorld(), worldErrorPlaceholders));
+                logger.error(AdventureUtil.serialize(locale.invalidWorld(), worldErrorPlaceholders));
                 return;
             }
 
             World world = skyLeaderboards.getServer().getWorld(signData.location().world());
             if(world == null) {
-                logger.error(FormatUtil.format(locale.invalidWorld(), worldErrorPlaceholders));
+                logger.error(AdventureUtil.serialize(locale.invalidWorld(), worldErrorPlaceholders));
                 return;
             }
 
@@ -93,26 +93,26 @@ public class SignManager {
 
                 // Update each line of the sign (front and back) based on the sign data config.
                 if (signData.lines().one() != null) {
-                    frontSide.line(0, FormatUtil.format(firstPlayer, signData.lines().one()));
-                    backSide.line(0, FormatUtil.format(firstPlayer, signData.lines().one()));
+                    frontSide.line(0, AdventureUtil.serialize(firstPlayer, signData.lines().one()));
+                    backSide.line(0, AdventureUtil.serialize(firstPlayer, signData.lines().one()));
                 }
                 if (signData.lines().two() != null) {
-                    frontSide.line(1, FormatUtil.format(firstPlayer, signData.lines().two()));
-                    backSide.line(1, FormatUtil.format(firstPlayer, signData.lines().two()));
+                    frontSide.line(1, AdventureUtil.serialize(firstPlayer, signData.lines().two()));
+                    backSide.line(1, AdventureUtil.serialize(firstPlayer, signData.lines().two()));
                 }
                 if (signData.lines().three() != null) {
-                    frontSide.line(2, FormatUtil.format(firstPlayer, signData.lines().three()));
-                    backSide.line(2, FormatUtil.format(firstPlayer, signData.lines().three()));
+                    frontSide.line(2, AdventureUtil.serialize(firstPlayer, signData.lines().three()));
+                    backSide.line(2, AdventureUtil.serialize(firstPlayer, signData.lines().three()));
                 }
                 if (signData.lines().four() != null) {
-                    frontSide.line(3, FormatUtil.format(firstPlayer, signData.lines().four()));
-                    backSide.line(3, FormatUtil.format(firstPlayer, signData.lines().four()));
+                    frontSide.line(3, AdventureUtil.serialize(firstPlayer, signData.lines().four()));
+                    backSide.line(3, AdventureUtil.serialize(firstPlayer, signData.lines().four()));
                 }
 
                 // Update the block state
                 sign.update(true);
             } else {
-                logger.error(FormatUtil.format(locale.invalidBlock(), blockErrorPlaceholders));
+                logger.error(AdventureUtil.serialize(locale.invalidBlock(), blockErrorPlaceholders));
             }
         });
     }

@@ -25,19 +25,31 @@ import com.github.lukesky19.skyleaderboards.manager.HeadManager;
 import com.github.lukesky19.skyleaderboards.manager.NPCManager;
 import com.github.lukesky19.skyleaderboards.manager.SignManager;
 import com.github.lukesky19.skyleaderboards.manager.TaskManager;
+import com.github.lukesky19.skylib.api.adventure.AdventureUtil;
 import io.papermc.paper.plugin.lifecycle.event.types.LifecycleEvents;
+import org.bukkit.plugin.Plugin;
+import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.util.List;
 
+// TODO Add missing javadocs
+/**
+ * The plugin's main class.
+ */
 public final class SkyLeaderboards extends JavaPlugin {
     private SettingsManager settingsManager;
     private LocaleManager localeManager;
     private DataManager dataManager;
     private TaskManager taskManager;
 
+    /**
+     * The method ran when the plugin is enabled.
+     */
     @Override
     public void onEnable() {
+        if(!checkSkyLibVersion()) return;
+
         this.settingsManager = new SettingsManager(this);
         this.localeManager = new LocaleManager(this, this.settingsManager);
         this.dataManager = new DataManager(this);
@@ -58,14 +70,42 @@ public final class SkyLeaderboards extends JavaPlugin {
         taskManager.startUpdateTask();
     }
 
+    /**
+     * The method ran when the plugin is disabled.
+     */
     @Override
     public void onDisable() {
-        taskManager.stopUpdateTask();
+        if(taskManager != null) taskManager.stopUpdateTask();
     }
 
+    /**
+     * The method ran to reload the plugin.
+     */
     public void reload() {
         this.settingsManager.reload();
         this.localeManager.reload();
         this.dataManager.reload();
+    }
+
+    /**
+     * Checks if the Server has the proper SkyLib version.
+     * @return true if it does, false if not.
+     */
+    private boolean checkSkyLibVersion() {
+        PluginManager pluginManager = this.getServer().getPluginManager();
+        Plugin skyLib = pluginManager.getPlugin("SkyLib");
+        if (skyLib != null) {
+            String version = skyLib.getPluginMeta().getVersion();
+            String[] splitVersion = version.split("\\.");
+            int second = Integer.parseInt(splitVersion[1]);
+
+            if(second >= 3) {
+                return true;
+            }
+        }
+
+        this.getComponentLogger().error(AdventureUtil.serialize("SkyLib Version 1.3.0.0 or newer is required to run this plugin."));
+        this.getServer().getPluginManager().disablePlugin(this);
+        return false;
     }
 }

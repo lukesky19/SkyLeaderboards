@@ -6,9 +6,9 @@ import com.github.lukesky19.skyleaderboards.configuration.loader.DataManager;
 import com.github.lukesky19.skyleaderboards.configuration.loader.LocaleManager;
 import com.github.lukesky19.skyleaderboards.configuration.record.Data;
 import com.github.lukesky19.skyleaderboards.configuration.record.Locale;
-import com.github.lukesky19.skylib.format.FormatUtil;
-import com.github.lukesky19.skylib.format.PlaceholderAPIUtil;
-import com.github.lukesky19.skylib.player.PlayerUtil;
+import com.github.lukesky19.skylib.api.adventure.AdventureUtil;
+import com.github.lukesky19.skylib.api.placeholderapi.PlaceholderAPIUtil;
+import com.github.lukesky19.skylib.api.player.PlayerUtil;
 import net.kyori.adventure.text.logger.slf4j.ComponentLogger;
 import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder;
 import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver;
@@ -67,13 +67,13 @@ public class HeadManager {
 
             // Get the World configured and log an error message if it is null
             if(headData.location().world() == null) {
-                logger.error(FormatUtil.format(locale.invalidWorld(), worldErrorPlaceholders));
+                logger.error(AdventureUtil.serialize(locale.invalidWorld(), worldErrorPlaceholders));
                 return;
             }
 
             World world = skyLeaderboards.getServer().getWorld(headData.location().world());
             if(world == null) {
-                logger.error(FormatUtil.format(locale.invalidWorld(), worldErrorPlaceholders));
+                logger.error(AdventureUtil.serialize(locale.invalidWorld(), worldErrorPlaceholders));
                 return;
             }
 
@@ -138,7 +138,7 @@ public class HeadManager {
                     }
                 }
             } else {
-                logger.error(FormatUtil.format(locale.invalidBlock(), blockErrorPlaceholders));
+                logger.error(AdventureUtil.serialize(locale.invalidBlock(), blockErrorPlaceholders));
             }
         });
     }

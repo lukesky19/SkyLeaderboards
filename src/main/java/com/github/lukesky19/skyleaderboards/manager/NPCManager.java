@@ -5,8 +5,8 @@ import com.github.lukesky19.skyleaderboards.configuration.loader.DataManager;
 import com.github.lukesky19.skyleaderboards.configuration.loader.LocaleManager;
 import com.github.lukesky19.skyleaderboards.configuration.record.Data;
 import com.github.lukesky19.skyleaderboards.configuration.record.Locale;
-import com.github.lukesky19.skylib.format.FormatUtil;
-import com.github.lukesky19.skylib.format.PlaceholderAPIUtil;
+import com.github.lukesky19.skylib.api.adventure.AdventureUtil;
+import com.github.lukesky19.skylib.api.placeholderapi.PlaceholderAPIUtil;
 import net.citizensnpcs.api.CitizensAPI;
 import net.citizensnpcs.api.npc.NPC;
 import net.citizensnpcs.trait.SkinTrait;
@@ -65,13 +65,13 @@ public class NPCManager {
 
             // Get the World configured and log an error message if it is null
             if(npcData.location().world() == null) {
-                logger.error(FormatUtil.format(locale.invalidWorld(), worldErrorPlaceholders));
+                logger.error(AdventureUtil.serialize(locale.invalidWorld(), worldErrorPlaceholders));
                 return;
             }
 
             World world = skyLeaderboards.getServer().getWorld(npcData.location().world());
             if(world == null) {
-                logger.error(FormatUtil.format(locale.invalidWorld(), worldErrorPlaceholders));
+                logger.error(AdventureUtil.serialize(locale.invalidWorld(), worldErrorPlaceholders));
                 return;
             }
 
@@ -105,7 +105,7 @@ public class NPCManager {
                     npc.getOrAddTrait(SkinTrait.class).setSkinName(skinPlayerName);
                 }
             } else {
-                logger.error(FormatUtil.format(locale.invalidNpc(), npcErrorPlaceholders));
+                logger.error(AdventureUtil.serialize(locale.invalidNpc(), npcErrorPlaceholders));
             }
         });
     }

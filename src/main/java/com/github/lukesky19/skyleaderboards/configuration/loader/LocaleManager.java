@@ -20,8 +20,8 @@ package com.github.lukesky19.skyleaderboards.configuration.loader;
 import com.github.lukesky19.skyleaderboards.SkyLeaderboards;
 import com.github.lukesky19.skyleaderboards.configuration.record.Locale;
 import com.github.lukesky19.skyleaderboards.configuration.record.Settings;
-import com.github.lukesky19.skylib.config.ConfigurationUtility;
-import com.github.lukesky19.skylib.format.FormatUtil;
+import com.github.lukesky19.skylib.api.adventure.AdventureUtil;
+import com.github.lukesky19.skylib.api.configurate.ConfigurationUtility;
 import com.github.lukesky19.skylib.libs.configurate.ConfigurateException;
 import com.github.lukesky19.skylib.libs.configurate.yaml.YamlConfigurationLoader;
 import net.kyori.adventure.text.logger.slf4j.ComponentLogger;
@@ -69,7 +69,7 @@ public class LocaleManager {
         final ComponentLogger logger = skyLeaderboards.getComponentLogger();
 
         if(settings == null) {
-            logger.error(FormatUtil.format("<red>The plugin's locale config cannot be loaded due to an error with your settings.yml config.</red>"));
+            logger.error(AdventureUtil.serialize("<red>The plugin's locale config cannot be loaded due to an error with your settings.yml config.</red>"));
             return;
         }
 

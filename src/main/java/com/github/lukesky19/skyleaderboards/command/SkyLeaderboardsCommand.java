@@ -23,7 +23,7 @@ import com.github.lukesky19.skyleaderboards.configuration.record.Locale;
 import com.github.lukesky19.skyleaderboards.manager.HeadManager;
 import com.github.lukesky19.skyleaderboards.manager.NPCManager;
 import com.github.lukesky19.skyleaderboards.manager.SignManager;
-import com.github.lukesky19.skylib.format.FormatUtil;
+import com.github.lukesky19.skylib.api.adventure.AdventureUtil;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.tree.LiteralCommandNode;
 import io.papermc.paper.command.brigadier.CommandSourceStack;
@@ -66,11 +66,11 @@ public class SkyLeaderboardsCommand {
 
                             locale = localeManager.getLocale();
 
-                            sender.sendMessage(FormatUtil.format(locale.prefix() + locale.reload()));
+                            sender.sendMessage(AdventureUtil.serialize(locale.prefix() + locale.reload()));
 
                             return 1;
                         } else {
-                            sender.sendMessage(FormatUtil.format(locale.prefix() + locale.noPermission()));
+                            sender.sendMessage(AdventureUtil.serialize(locale.prefix() + locale.noPermission()));
 
                             return 0;
                         }
@@ -79,7 +79,7 @@ public class SkyLeaderboardsCommand {
 
                         locale = localeManager.getLocale();
 
-                        skyLeaderboards.getComponentLogger().info(FormatUtil.format(locale.reload()));
+                        skyLeaderboards.getComponentLogger().info(AdventureUtil.serialize(locale.reload()));
 
                         return 1;
                     }
@@ -97,11 +97,11 @@ public class SkyLeaderboardsCommand {
                             npcManager.update();
                             signManager.update();
 
-                            sender.sendMessage(FormatUtil.format(locale.prefix() + locale.update()));
+                            sender.sendMessage(AdventureUtil.serialize(locale.prefix() + locale.update()));
 
                             return 1;
                         } else {
-                            sender.sendMessage(FormatUtil.format(locale.prefix() + locale.noPermission()));
+                            sender.sendMessage(AdventureUtil.serialize(locale.prefix() + locale.noPermission()));
 
                             return 0;
                         }
@@ -110,7 +110,7 @@ public class SkyLeaderboardsCommand {
                         npcManager.update();
                         signManager.update();
 
-                        skyLeaderboards.getComponentLogger().info(FormatUtil.format(locale.update()));
+                        skyLeaderboards.getComponentLogger().info(AdventureUtil.serialize(locale.update()));
 
                         return 1;
                     }
