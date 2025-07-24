@@ -19,32 +19,42 @@ repositories {
     maven("https://repo.extendedclip.com/content/repositories/placeholderapi/") {
         name = "PlaceholderAPI Repo"
     }
+    maven("https://jitpack.io/") {
+        name = "Jitpack"
+    }
     mavenLocal()
 }
 
 dependencies {
-    compileOnly("io.papermc.paper:paper-api:1.21.7-R0.1-SNAPSHOT")
+    compileOnly("io.papermc.paper:paper-api:1.21.8-R0.1-SNAPSHOT")
     compileOnly("com.github.lukesky19:SkyLib:1.3.0.0")
     compileOnly("me.clip:placeholderapi:2.11.6")
     compileOnly("net.citizensnpcs:citizens-main:2.0.37-SNAPSHOT")
+    compileOnly("com.github.decentsoftware-eu:decentholograms:2.9.6")
 }
 
 java {
     toolchain.languageVersion.set(JavaLanguageVersion.of(21))
 }
 
-tasks.processResources {
-    val props = mapOf("version" to version)
-    inputs.properties(props)
-    filteringCharset = "UTF-8"
-    filesMatching("plugin.yml") {
-        expand(props)
+tasks {
+    processResources {
+        val props = mapOf("version" to version)
+        inputs.properties(props)
+        filteringCharset = "UTF-8"
+        filesMatching("plugin.yml") {
+            expand(props)
+        }
     }
-}
 
-tasks.jar {
-    manifest {
-        attributes["paperweight-mappings-namespace"] = "mojang"
+    jar {
+        manifest {
+            attributes["paperweight-mappings-namespace"] = "mojang"
+        }
+        archiveClassifier.set("")
     }
-    archiveClassifier.set("")
+
+    build {
+        dependsOn(javadoc)
+    }
 }

@@ -3,7 +3,7 @@ version: '${version}'
 main: com.github.lukesky19.skyleaderboards.SkyLeaderboards
 api-version: '1.21'
 author: lukeskywlker19
-depend: [Citizens, PlaceholderAPI]
+depend: [Citizens, DecentHolograms, PlaceholderAPI, SkyLib]
 
 permissions:
   skyleaderboards.command.skyleaderboards:

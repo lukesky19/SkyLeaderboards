@@ -1,6 +1,6 @@
 /*
-    SkyLeaderboards handles parsing PlaceholderAPI placeholders on signs, for updating heads, and for updating NPC skins (Citizens).
-    Copyright (C) 2024  lukeskywlker19
+    SkyLeaderboards handles parsing PlaceholderAPI placeholders on signs, holograms, for updating heads, and for updating NPC skins (Citizens).
+    Copyright (C) 2024 lukeskywlker19
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU Affero General Public License as published
@@ -18,13 +18,10 @@
 package com.github.lukesky19.skyleaderboards;
 
 import com.github.lukesky19.skyleaderboards.command.SkyLeaderboardsCommand;
-import com.github.lukesky19.skyleaderboards.configuration.loader.DataManager;
-import com.github.lukesky19.skyleaderboards.configuration.loader.LocaleManager;
-import com.github.lukesky19.skyleaderboards.configuration.loader.SettingsManager;
-import com.github.lukesky19.skyleaderboards.manager.HeadManager;
-import com.github.lukesky19.skyleaderboards.manager.NPCManager;
-import com.github.lukesky19.skyleaderboards.manager.SignManager;
-import com.github.lukesky19.skyleaderboards.manager.TaskManager;
+import com.github.lukesky19.skyleaderboards.configuration.manager.DataManager;
+import com.github.lukesky19.skyleaderboards.configuration.manager.LocaleManager;
+import com.github.lukesky19.skyleaderboards.configuration.manager.SettingsManager;
+import com.github.lukesky19.skyleaderboards.manager.*;
 import com.github.lukesky19.skylib.api.adventure.AdventureUtil;
 import io.papermc.paper.plugin.lifecycle.event.types.LifecycleEvents;
 import org.bukkit.plugin.Plugin;
@@ -33,7 +30,6 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 import java.util.List;
 
-// TODO Add missing javadocs
 /**
  * The plugin's main class.
  */
@@ -42,6 +38,11 @@ public final class SkyLeaderboards extends JavaPlugin {
     private LocaleManager localeManager;
     private DataManager dataManager;
     private TaskManager taskManager;
+
+    /**
+     * Default Constructor.
+     */
+    public SkyLeaderboards() {}
 
     /**
      * The method ran when the plugin is enabled.
@@ -54,12 +55,13 @@ public final class SkyLeaderboards extends JavaPlugin {
         this.localeManager = new LocaleManager(this, this.settingsManager);
         this.dataManager = new DataManager(this);
 
-        HeadManager headManager = new HeadManager(this, localeManager, dataManager);
-        NPCManager npcManager = new NPCManager(this, localeManager, dataManager);
-        SignManager signManager = new SignManager(this, localeManager, dataManager);
-        taskManager = new TaskManager(this, headManager, npcManager, signManager);
+        HeadManager headManager = new HeadManager(this, dataManager);
+        NPCManager npcManager = new NPCManager(this, dataManager);
+        SignManager signManager = new SignManager(this, dataManager);
+        HoloManager holoManager = new HoloManager(this, dataManager);
+        taskManager = new TaskManager(this, headManager, npcManager, signManager, holoManager);
 
-        SkyLeaderboardsCommand skyLeaderboardsCommand = new SkyLeaderboardsCommand(this, localeManager, headManager, npcManager, signManager);
+        SkyLeaderboardsCommand skyLeaderboardsCommand = new SkyLeaderboardsCommand(this, localeManager, headManager, npcManager, signManager, holoManager);
 
         this.getLifecycleManager().registerEventHandler(LifecycleEvents.COMMANDS, commands ->
                 commands.registrar().register(skyLeaderboardsCommand.createCommand(),

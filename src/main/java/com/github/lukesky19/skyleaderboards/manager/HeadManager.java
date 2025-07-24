@@ -1,24 +1,37 @@
+/*
+    SkyLeaderboards handles parsing PlaceholderAPI placeholders on signs, holograms, for updating heads, and for updating NPC skins (Citizens).
+    Copyright (C) 2024 lukeskywlker19
+
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU Affero General Public License as published
+    by the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU Affero General Public License for more details.
+
+    You should have received a copy of the GNU Affero General Public License
+    along with this program.  If not, see <https://www.gnu.org/licenses/>.
+*/
 package com.github.lukesky19.skyleaderboards.manager;
 
 import com.destroystokyo.paper.profile.PlayerProfile;
 import com.github.lukesky19.skyleaderboards.SkyLeaderboards;
-import com.github.lukesky19.skyleaderboards.configuration.loader.DataManager;
-import com.github.lukesky19.skyleaderboards.configuration.loader.LocaleManager;
+import com.github.lukesky19.skyleaderboards.configuration.manager.DataManager;
 import com.github.lukesky19.skyleaderboards.configuration.record.Data;
-import com.github.lukesky19.skyleaderboards.configuration.record.Locale;
 import com.github.lukesky19.skylib.api.adventure.AdventureUtil;
 import com.github.lukesky19.skylib.api.placeholderapi.PlaceholderAPIUtil;
 import com.github.lukesky19.skylib.api.player.PlayerUtil;
 import net.kyori.adventure.text.logger.slf4j.ComponentLogger;
-import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder;
-import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver;
 import org.bukkit.Location;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.World;
 import org.bukkit.block.Skull;
 import org.bukkit.entity.Player;
+import org.jetbrains.annotations.NotNull;
 
-import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 
@@ -26,19 +39,16 @@ import java.util.concurrent.CompletableFuture;
  * This classes manages the updating of Player Heads.
  */
 public class HeadManager {
-    private final SkyLeaderboards skyLeaderboards;
-    private final LocaleManager localeManager;
-    private final DataManager dataManager;
+    private final @NotNull SkyLeaderboards skyLeaderboards;
+    private final @NotNull DataManager dataManager;
 
     /**
      * Constructor
      * @param skyLeaderboards The Plugin's Instance
-     * @param localeManager A LocaleManager instance
      * @param dataManager A DataManager instance
      */
-    public HeadManager(SkyLeaderboards skyLeaderboards, LocaleManager localeManager, DataManager dataManager) {
+    public HeadManager(@NotNull SkyLeaderboards skyLeaderboards, @NotNull DataManager dataManager) {
         this.skyLeaderboards = skyLeaderboards;
-        this.localeManager = localeManager;
         this.dataManager = dataManager;
     }
 
@@ -51,39 +61,25 @@ public class HeadManager {
 
         // Get the plugin's configuration
         Data data = dataManager.getData();
+        if(data == null) return;
         // Get the first player online just in-case a Placeholder requires a player to parse them.
         Player firstPlayer = skyLeaderboards.getServer().getOnlinePlayers().stream().toList().getFirst();
         // Get the ComponentLogger from the plugin.
         ComponentLogger logger = skyLeaderboards.getComponentLogger();
-        // Get the plugin's locale config.
-        Locale locale = localeManager.getLocale();
 
         // Loop through configured heads to update
         data.heads().forEach((key, headData) -> {
-            // Create the placeholder list for the world error message
-            List<TagResolver.Single> worldErrorPlaceholders = List.of(
-                    Placeholder.parsed("type", "heads"),
-                    Placeholder.parsed("id", String.valueOf(key)));
-
             // Get the World configured and log an error message if it is null
             if(headData.location().world() == null) {
-                logger.error(AdventureUtil.serialize(locale.invalidWorld(), worldErrorPlaceholders));
+                logger.error(AdventureUtil.serialize("The world name for for " + key + " under heads is invalid."));
                 return;
             }
 
             World world = skyLeaderboards.getServer().getWorld(headData.location().world());
             if(world == null) {
-                logger.error(AdventureUtil.serialize(locale.invalidWorld(), worldErrorPlaceholders));
+                logger.error(AdventureUtil.serialize("No world found for world name " + headData.location().world() + " for " + key + " under heads."));
                 return;
             }
-
-            // Create the placeholder list for the block error message
-            List<TagResolver.Single> blockErrorPlaceholders = List.of(
-                    Placeholder.parsed("type", "player head"),
-                    Placeholder.parsed("world", headData.location().world()),
-                    Placeholder.parsed("x", String.valueOf(headData.location().x())),
-                    Placeholder.parsed("y", String.valueOf(headData.location().y())),
-                    Placeholder.parsed("z", String.valueOf(headData.location().z())));
 
             // Build the Location object for the head data config.
             Location loc = new Location(world, headData.location().x(), headData.location().y(), headData.location().z());
@@ -91,6 +87,8 @@ public class HeadManager {
             // If the BlockState at the Location is a Skull, attempt to update it
             // Otherwise we log a warning to the console.
             if (world.getBlockState(loc) instanceof Skull skull) {
+                if(headData.placeholder() == null) return;
+
                 // Parse the placeholder for the given head data config.
                 String playerName = PlaceholderAPIUtil.parsePlaceholders(firstPlayer, headData.placeholder());
 
@@ -138,7 +136,12 @@ public class HeadManager {
                     }
                 }
             } else {
-                logger.error(AdventureUtil.serialize(locale.invalidBlock(), blockErrorPlaceholders));
+                logger.error(AdventureUtil.serialize("The block in world " +
+                        headData.location().world() +
+                        " at x: " + headData.location().x() +
+                        " y: " + headData.location().y() +
+                        " z: " + headData.location().z() +
+                        " is not a player head."));
             }
         });
     }
