@@ -1,6 +1,6 @@
 /*
-    SkyLeaderboards handles parsing PlaceholderAPI placeholders on signs, for updating heads, and for updating NPC skins (Citizens).
-    Copyright (C) 2024  lukeskywlker19
+    SkyLeaderboards handles parsing PlaceholderAPI placeholders on signs, holograms, for updating heads, and for updating NPC skins (Citizens).
+    Copyright (C) 2024 lukeskywlker19
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU Affero General Public License as published
@@ -15,36 +15,41 @@
     You should have received a copy of the GNU Affero General Public License
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
-package com.github.lukesky19.skyleaderboards.configuration.loader;
+package com.github.lukesky19.skyleaderboards.configuration.manager;
 
 import com.github.lukesky19.skyleaderboards.SkyLeaderboards;
 import com.github.lukesky19.skyleaderboards.configuration.record.Locale;
 import com.github.lukesky19.skyleaderboards.configuration.record.Settings;
-import com.github.lukesky19.skylib.config.ConfigurationUtility;
-import com.github.lukesky19.skylib.format.FormatUtil;
+import com.github.lukesky19.skylib.api.adventure.AdventureUtil;
+import com.github.lukesky19.skylib.api.configurate.ConfigurationUtility;
 import com.github.lukesky19.skylib.libs.configurate.ConfigurateException;
 import com.github.lukesky19.skylib.libs.configurate.yaml.YamlConfigurationLoader;
 import net.kyori.adventure.text.logger.slf4j.ComponentLogger;
 import net.kyori.adventure.text.minimessage.MiniMessage;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.io.File;
 import java.nio.file.Path;
 
+/**
+ * This class manages the plugin's locale configuration.
+ */
 public class LocaleManager {
-    private final SkyLeaderboards skyLeaderboards;
-    private final SettingsManager settingsManager;
-    private Locale locale;
-    private final Locale DEFAULT_LOCALE = new Locale(
+    private final @NotNull SkyLeaderboards skyLeaderboards;
+    private final @NotNull SettingsManager settingsManager;
+    private @Nullable Locale locale;
+    private final @NotNull Locale DEFAULT_LOCALE = new Locale(
             "<aqua><bold>SkyLeaderboards</bold></aqua><gray> ▪ </gray>",
             "<aqua>The plugin has been reloaded.</aqua>",
-            "<red>The plugin failed to reload due to a config error.</red>",
-            "<red>Force updating signs, heads, and NPCs.</red>",
-            "<red>You do not have permission for this command.<red>",
-            "<red>The world name for <yellow><id></yellow> under <yellow><type</yellow> is invalid.</red>",
-            "<red>The block in <yellow><world></yellow> at <yellow><x> <y> <z></yellow> is not a <type>.</red>",
-            "<red>There was no NPC found at <yellow><x> <y> <z></yellow></red>");
+            "<red>Force updating signs, heads, and NPCs.</red>");
 
-    public LocaleManager(SkyLeaderboards skyLeaderboards, SettingsManager settingsManager) {
+    /**
+     * Constructor
+     * @param skyLeaderboards A {@link SkyLeaderboards} instance.
+     * @param settingsManager A {@link SettingsManager} instance.
+     */
+    public LocaleManager(@NotNull SkyLeaderboards skyLeaderboards, @NotNull SettingsManager settingsManager) {
         this.skyLeaderboards = skyLeaderboards;
         this.settingsManager = settingsManager;
     }
@@ -65,11 +70,11 @@ public class LocaleManager {
      */
     public void reload() {
         locale = null;
-        final Settings settings = settingsManager.getSettingsConfig();
+        final Settings settings = settingsManager.getSettings();
         final ComponentLogger logger = skyLeaderboards.getComponentLogger();
 
         if(settings == null) {
-            logger.error(FormatUtil.format("<red>The plugin's locale config cannot be loaded due to an error with your settings.yml config.</red>"));
+            logger.error(AdventureUtil.serialize("<red>The plugin's locale config cannot be loaded due to an error with your settings.yml config.</red>"));
             return;
         }
 
@@ -110,12 +115,7 @@ public class LocaleManager {
 
         if(locale.prefix() == null
                 || locale.reload() == null
-                || locale.reloadError() == null
-                || locale.update() == null
-                || locale.noPermission() == null
-                || locale.invalidWorld() == null
-                || locale.invalidBlock() == null
-                || locale.invalidNpc() == null)
+                || locale.update() == null)
             locale = null;
     }
 }

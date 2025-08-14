@@ -1,11 +1,12 @@
 # SkyLeaderboards
 ## Description
-* SkyLeaderboards is a plugin that handles parsing PlaceholderAPI placeholders on signs, for updating heads, and for updating NPC skins (Citizens).
+* SkyLeaderboards is a plugin that handles parsing PlaceholderAPI placeholders on signs, holograms, for updating heads, and for updating NPC skins (Citizens).
 
 ## Features
 * Parse PlaceholderAPI placeholders and update sign text.
 * Parse PlaceholderAPI placeholders and update head textures.
 * Parse PlaceholderAPI placeholders and update NPC skins (Citizens).
+* Parse PlaceholderAPI placeholders and update holograms (DecentHolograms).
 
 ## Disclaimer
 * This plugin does NOT track or store any data to act as a leaderboard.
@@ -15,6 +16,7 @@
 ## Dependencies
 * [SkyLib](https://github.com/lukesky19/SkyLib)
 * Citizens
+* DecentHolograms
 * PlaceholderAPI
 
 ## Commands
@@ -31,19 +33,15 @@
 ## FAQ
 Q: What versions does this plugin support?
 
-A: 1.21.0, 1.21.1, 1.21.2, 1.21.3, and 1.21.4.
+A: 1.21.4, 1.21.5, 1.21.6, 1.21.7, and 1.21.8.
 
 Q: Are there any plans to support any other versions?
 
-A: I will always support the latest and future versions of the game, but there are no plans to support anything older than 1.21.0.
+A: I will always do my best to support the latest versions of the game. I will sometimes support other versions until I no longer use them.
 
-Q: Does this work on Spigot and Paper?
+Q: Does this work on Spigot? Paper? (Insert other server software here)?
 
-A: Only Paper is supported. There are no plans to support Spigot.
-
-Q: Is Folia supported?
-
-A: There is no Folia support at this time. I may look into it in the future though.
+A: I only support Paper, but this will likely also work on forks of Paper (untested). There are no plans to support any other server software (i.e., Spigot or Folia).
 
 ## Issues, Bugs, or Suggestions
 * Please create a new [GitHub Issue](https://github.com/lukesky19/SkyLeaderboards/issues) with your issue, bug, or suggestion.

@@ -1,3 +1,4 @@
+config-version: 1.0.0.0
 heads:
   0:
     location:
@@ -28,3 +29,11 @@ npcs:
       z: 0
     # This should resolve to a player's name so that it can be used to set the skin!
     placeholder: ""
+holos:
+  0:
+    hologram-id: ""
+    lines:
+      - ""
+      - ""
+      - ""
+      - ""

@@ -1,6 +1,6 @@
 /*
-    SkyLeaderboards handles parsing PlaceholderAPI placeholders on signs, for updating heads, and for updating NPC skins (Citizens).
-    Copyright (C) 2024  lukeskywlker19
+    SkyLeaderboards handles parsing PlaceholderAPI placeholders on signs, holograms, for updating heads, and for updating NPC skins (Citizens).
+    Copyright (C) 2024 lukeskywlker19
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU Affero General Public License as published
@@ -19,7 +19,12 @@ package com.github.lukesky19.skyleaderboards.configuration.record;
 
 import com.github.lukesky19.skylib.libs.configurate.objectmapping.ConfigSerializable;
 
-import javax.annotation.CheckForNull;
+import javax.annotation.Nullable;
 
+/**
+ * The plugin's settings.
+ * @param configVersion The version of the config file.
+ * @param locale The locale name to use.
+ */
 @ConfigSerializable
-public record Settings(@CheckForNull String locale) {}
+public record Settings(@Nullable String configVersion, @Nullable String locale) {}

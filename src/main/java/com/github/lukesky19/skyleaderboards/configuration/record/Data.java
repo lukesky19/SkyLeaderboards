@@ -1,6 +1,6 @@
 /*
-    SkyLeaderboards handles parsing PlaceholderAPI placeholders on signs, for updating heads, and for updating NPC skins (Citizens).
-    Copyright (C) 2024  lukeskywlker19
+    SkyLeaderboards handles parsing PlaceholderAPI placeholders on signs, holograms, for updating heads, and for updating NPC skins (Citizens).
+    Copyright (C) 2024 lukeskywlker19
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU Affero General Public License as published
@@ -18,19 +18,66 @@
 package com.github.lukesky19.skyleaderboards.configuration.record;
 
 import com.github.lukesky19.skylib.libs.configurate.objectmapping.ConfigSerializable;
+import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nullable;
-import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
+/**
+ * This record contains the data to update leaderboards with.
+ * @param heads The {@link Map} of {@link Integer} to {@link Head} configuration for head-based leaderboards.
+ * @param signs The {@link Map} of {@link Integer} to {@link Sign} configuration for sign-based leaderboards.
+ * @param npcs The {@link Map} of {@link Integer} to {@link NPC} configuration for npc-based leaderboards.
+ * @param holos The {@link Map} of {@link Integer} to {@link Holo} configuration for hologram-based leaderboards.
+ */
 @ConfigSerializable
-public record Data(HashMap<Integer, Head> heads, HashMap<Integer, Sign> signs, HashMap<Integer, NPC> npcs) {
+public record Data(
+        @NotNull Map<Integer, Head> heads,
+        @NotNull Map<Integer, Sign> signs,
+        @NotNull Map<Integer, NPC> npcs,
+        @NotNull Map<Integer, Holo> holos) {
+    /**
+     * The configuration for a head leaderboard.
+     * @param location The {@link Location} config for the head.
+     * @param placeholder The placeholder that results in a player name to set the head's texture to.
+     */
     @ConfigSerializable
-    public record Head(Location location, @Nullable String placeholder) {}
-    @ConfigSerializable
-    public record Sign(Location location, Lines lines) {}
-    @ConfigSerializable
-    public record NPC(Location location, @Nullable String placeholder) {}
+    public record Head(@NotNull Location location, @Nullable String placeholder) {}
 
+    /**
+     * The configuration for a sign leaderboard.
+     * @param location The {@link Location} config for the sign.
+     * @param lines The {@link Lines} config for the sign.
+     */
+    @ConfigSerializable
+    public record Sign(@NotNull Location location, @NotNull Lines lines) {}
+
+    /**
+     * The configuration for an NPC leaderboard.
+     * @param location The {@link Location} config of the NPC.
+     * @param placeholder The placeholder that results in a player name to set the NPC's skin to.
+     */
+    @ConfigSerializable
+    public record NPC(@NotNull Location location, @Nullable String placeholder) {}
+
+    /**
+     * The configuration for a hologram leaderboard.
+     * @param hologramId The name of the hologram.
+     * @param lines The lines to set for the hologram.
+     */
+    @ConfigSerializable
+    public record Holo(
+            @Nullable String hologramId,
+            @NotNull List<String> lines) {}
+
+    /**
+     * This record contains the data to create a {@link org.bukkit.Location}.
+     * @param world The world name.
+     * @param x The x coordinate.
+     * @param y The y coordinate.
+     * @param z The z coordinate.
+     */
     @ConfigSerializable
     public record Location(
             @Nullable String world,
@@ -38,6 +85,13 @@ public record Data(HashMap<Integer, Head> heads, HashMap<Integer, Sign> signs, H
             double y,
             double z) {}
 
+    /**
+     * This record contains the data to populate a sign with.
+     * @param one Line one's text.
+     * @param two Line two's text.
+     * @param three Line three's text.
+     * @param four Line four's text.
+     */
     @ConfigSerializable
     public record Lines(
             @Nullable String one,

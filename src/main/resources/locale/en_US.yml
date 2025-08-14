@@ -1,8 +1,4 @@
+config-version: 1.0.0.0
 prefix: "<aqua><bold>SkyLeaderboards</bold></aqua><gray> ▪ </gray>"
 reload: "<aqua>The plugin has been reloaded.</aqua>"
-reload-error: "<red>The plugin failed to reload due to a config error.</red>"
 update: "<red>Force updating signs, heads, and NPCs.</red>"
-no-permission: "<red>You do not have permission for this command.<red>"
-invalid-world: "<red>The world name for <yellow><id></yellow> under <yellow><type</yellow> is invalid.</red>"
-invalid-block: "<red>The block in <yellow><world></yellow> at <yellow><x> <y> <z></yellow> is not a <type>.</red>"
-invalid-npc: "<red>There was no NPC found at <yellow><x> <y> <z></yellow></red>"

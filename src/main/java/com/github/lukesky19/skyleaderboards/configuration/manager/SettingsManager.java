@@ -1,6 +1,6 @@
 /*
-    SkyLeaderboards handles parsing PlaceholderAPI placeholders on signs, for updating heads, and for updating NPC skins (Citizens).
-    Copyright (C) 2024  lukeskywlker19
+    SkyLeaderboards handles parsing PlaceholderAPI placeholders on signs, holograms, for updating heads, and for updating NPC skins (Citizens).
+    Copyright (C) 2024 lukeskywlker19
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU Affero General Public License as published
@@ -15,33 +15,47 @@
     You should have received a copy of the GNU Affero General Public License
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
-package com.github.lukesky19.skyleaderboards.configuration.loader;
+package com.github.lukesky19.skyleaderboards.configuration.manager;
 
 import com.github.lukesky19.skyleaderboards.SkyLeaderboards;
 import com.github.lukesky19.skyleaderboards.configuration.record.Settings;
-import com.github.lukesky19.skylib.config.ConfigurationUtility;
+import com.github.lukesky19.skylib.api.configurate.ConfigurationUtility;
 import com.github.lukesky19.skylib.libs.configurate.ConfigurateException;
 import com.github.lukesky19.skylib.libs.configurate.yaml.YamlConfigurationLoader;
+import org.jetbrains.annotations.NotNull;
 
-import javax.annotation.CheckForNull;
+import javax.annotation.Nullable;
 import java.io.File;
 import java.nio.file.Path;
 
+/**
+ * This class manages the plugin's settings.
+ */
 public class SettingsManager {
-    final SkyLeaderboards skyLeaderboards;
-    Settings settingsConfig;
+    private final @NotNull SkyLeaderboards skyLeaderboards;
+    private @Nullable Settings settings;
 
-    public SettingsManager(SkyLeaderboards skyLeaderboards) {
+    /**
+     * Constructor
+     * @param skyLeaderboards A {@link SkyLeaderboards} instance.
+     */
+    public SettingsManager(@NotNull SkyLeaderboards skyLeaderboards) {
         this.skyLeaderboards = skyLeaderboards;
     }
 
-    @CheckForNull
-    public Settings getSettingsConfig() {
-        return settingsConfig;
+    /**
+     * Get the plugin's {@link Settings}.
+     * @return The plugin's {@link Settings} or null.
+     */
+    public @Nullable Settings getSettings() {
+        return settings;
     }
 
+    /**
+     * Reloads the plugin's settings.
+     */
     public void reload() {
-        settingsConfig = null;
+        settings = null;
 
         Path path = Path.of(skyLeaderboards.getDataFolder() + File.separator + "settings.yml");
         if(!path.toFile().exists()) {
@@ -50,7 +64,7 @@ public class SettingsManager {
 
         YamlConfigurationLoader loader = ConfigurationUtility.getYamlConfigurationLoader(path);
         try {
-            settingsConfig = loader.load().get(Settings.class);
+            settings = loader.load().get(Settings.class);
         } catch (ConfigurateException e) {
             throw new RuntimeException(e);
         }
