@@ -18,13 +18,12 @@
 package com.github.lukesky19.skyleaderboards.configuration.record;
 
 import com.github.lukesky19.skylib.libs.configurate.objectmapping.ConfigSerializable;
-
-import javax.annotation.Nullable;
+import org.jspecify.annotations.Nullable;
 
 /**
  * The plugin's settings.
- * @param configVersion The version of the config file.
+ * @param version The version of the config file.
  * @param locale The locale name to use.
  */
 @ConfigSerializable
-public record Settings(@Nullable String configVersion, @Nullable String locale) {}
+public record Settings(int version, @Nullable String locale) {}

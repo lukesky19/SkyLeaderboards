@@ -19,10 +19,8 @@ package com.github.lukesky19.skyleaderboards.configuration.manager;
 
 import com.github.lukesky19.skyleaderboards.SkyLeaderboards;
 import com.github.lukesky19.skyleaderboards.configuration.record.Data;
-import com.github.lukesky19.skylib.api.configurate.ConfigurationUtility;
-import com.github.lukesky19.skylib.libs.configurate.ConfigurateException;
-import com.github.lukesky19.skylib.libs.configurate.yaml.YamlConfigurationLoader;
-import org.jetbrains.annotations.NotNull;
+import com.github.lukesky19.skylib.api.common.abstracts.config.SimpleConfigManager;
+import org.jspecify.annotations.NonNull;
 
 import javax.annotation.Nullable;
 import java.io.File;
@@ -31,41 +29,36 @@ import java.nio.file.Path;
 /**
  * This class manages the plugin's configuration for displaying leaderboards.
  */
-public class DataManager {
-    private final @NotNull SkyLeaderboards skyLeaderboards;
-    private @Nullable Data data;
-
+public class DataManager extends SimpleConfigManager<Data> {
     /**
      * Constructor
      * @param skyLeaderboards A {@link SkyLeaderboards} instance.
      */
-    public DataManager(@NotNull SkyLeaderboards skyLeaderboards) {
-        this.skyLeaderboards = skyLeaderboards;
+    public DataManager(@NonNull SkyLeaderboards skyLeaderboards) {
+        super(skyLeaderboards, Path.of(skyLeaderboards.getDataFolder() + File.separator + "data.yml"), Data.class);
     }
 
-    /**
-     * Get the {@link Data} loaded for leaderboards.
-     * @return The loaded {@link Data} or null.
-     */
-    public @Nullable Data getData() {
+    @Override
+    public void saveBundledConfig() {
+        plugin.saveResource("settings.yml", false);
+    }
+
+    @Override
+    public @Nullable Data migrateConfiguration(@NonNull Data data) {
+        if(data.version() == 0) {
+            return new Data(
+                    1,
+                    data.heads(),
+                    data.signs(),
+                    data.npcs(),
+                    data.holos());
+        }
+
         return data;
     }
 
-    /**
-     * Reloads the plugin's data for leaderboards to display.
-     */
-    public void reload() {
-        data = null;
-        Path path = Path.of(skyLeaderboards.getDataFolder() + File.separator + "data.yml");
-        if(!path.toFile().exists()) {
-            skyLeaderboards.saveResource("data.yml", false);
-        }
-
-        YamlConfigurationLoader loader = ConfigurationUtility.getYamlConfigurationLoader(path);
-        try {
-            data = loader.load().get(Data.class);
-        } catch (ConfigurateException e) {
-            throw new RuntimeException(e);
-        }
+    @Override
+    public boolean validateConfiguration(@Nullable Data configuration) {
+        return configuration != null;
     }
 }

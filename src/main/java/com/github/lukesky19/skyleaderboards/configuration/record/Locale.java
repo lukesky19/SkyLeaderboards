@@ -21,12 +21,14 @@ import com.github.lukesky19.skylib.libs.configurate.objectmapping.ConfigSerializ
 
 /**
  * This record contains the plugin's locale configuration.
+ * @param version The config version.
  * @param prefix The plugin's prefix.
  * @param reload The message sent on plugin reload.
  * @param update The message sent when leaderboards are updated using a command.
  */
 @ConfigSerializable
 public record Locale(
+        int version,
         String prefix,
         String reload,
         String update) {}

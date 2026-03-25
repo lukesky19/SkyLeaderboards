@@ -27,14 +27,14 @@ import eu.decentsoftware.holograms.api.holograms.Hologram;
 import eu.decentsoftware.holograms.api.holograms.HologramPage;
 import net.kyori.adventure.text.logger.slf4j.ComponentLogger;
 import org.bukkit.entity.Player;
-import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NonNull;
 
 /**
  * This class manages the updating of holograms.
  */
 public class HoloManager {
-    private final @NotNull SkyLeaderboards skyLeaderboards;
-    private final @NotNull DataManager dataManager;
+    private final @NonNull SkyLeaderboards skyLeaderboards;
+    private final @NonNull DataManager dataManager;
 
     /**
      * Constructor
@@ -42,8 +42,8 @@ public class HoloManager {
      * @param dataManager A {@link DataManager} instance.
      */
     public HoloManager(
-            @NotNull SkyLeaderboards skyLeaderboards,
-            @NotNull DataManager dataManager) {
+            @NonNull SkyLeaderboards skyLeaderboards,
+            @NonNull DataManager dataManager) {
         this.skyLeaderboards = skyLeaderboards;
         this.dataManager = dataManager;
     }
@@ -56,7 +56,7 @@ public class HoloManager {
         if(skyLeaderboards.getServer().getOnlinePlayers().isEmpty()) return;
 
         // Get the plugin's configuration
-        Data data = dataManager.getData();
+        Data data = dataManager.getConfiguration();
         if(data == null) return;
         // Get the first player online just in-case a Placeholder requires a player to parse them.
         Player firstPlayer = skyLeaderboards.getServer().getOnlinePlayers().stream().toList().getFirst();
@@ -67,7 +67,7 @@ public class HoloManager {
         data.holos().forEach((key, holoData) -> {
             if(holoData.hologramId() != null) {
                 Hologram hologram = DHAPI.getHologram(holoData.hologramId());
-                if (hologram != null) {
+                if(hologram != null) {
                     HologramPage hologramPage = hologram.getPages().getFirst();
                     if(hologramPage != null) {
                         for(int i = 0; i <= holoData.lines().size() - 1; i++) {
@@ -75,13 +75,13 @@ public class HoloManager {
                             hologramPage.setLine(i, PlaceholderAPIUtil.parsePlaceholders(firstPlayer, line));
                         }
                     } else {
-                        logger.error(AdventureUtil.serialize("No hologram page found for id " + holoData.hologramId() + " for key " + key));
+                        logger.error(AdventureUtil.deserialize("No hologram page found for id " + holoData.hologramId() + " for key " + key));
                     }
                 } else {
-                    logger.error(AdventureUtil.serialize("No hologram found for id " + holoData.hologramId() + " for key " + key));
+                    logger.error(AdventureUtil.deserialize("No hologram found for id " + holoData.hologramId() + " for key " + key));
                 }
             } else {
-                logger.error(AdventureUtil.serialize("Unable to update hologram due to null id for key " + key));
+                logger.error(AdventureUtil.deserialize("Unable to update hologram due to null id for key " + key));
             }
         });
     }

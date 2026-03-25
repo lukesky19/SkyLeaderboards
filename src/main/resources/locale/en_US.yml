@@ -1,4 +1,4 @@
-config-version: 1.0.0.0
+version: 1
 prefix: "<aqua><bold>SkyLeaderboards</bold></aqua><gray> ▪ </gray>"
 reload: "<aqua>The plugin has been reloaded.</aqua>"
 update: "<red>Force updating signs, heads, and NPCs.</red>"

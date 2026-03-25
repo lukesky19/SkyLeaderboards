@@ -24,13 +24,15 @@ import com.github.lukesky19.skyleaderboards.configuration.record.Data;
 import com.github.lukesky19.skylib.api.adventure.AdventureUtil;
 import com.github.lukesky19.skylib.api.placeholderapi.PlaceholderAPIUtil;
 import com.github.lukesky19.skylib.api.player.PlayerUtil;
+import com.github.lukesky19.skylib.api.version.VersionUtil;
+import io.papermc.paper.datacomponent.item.ResolvableProfile;
 import net.kyori.adventure.text.logger.slf4j.ComponentLogger;
 import org.bukkit.Location;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.World;
 import org.bukkit.block.Skull;
 import org.bukkit.entity.Player;
-import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NonNull;
 
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
@@ -39,15 +41,15 @@ import java.util.concurrent.CompletableFuture;
  * This classes manages the updating of Player Heads.
  */
 public class HeadManager {
-    private final @NotNull SkyLeaderboards skyLeaderboards;
-    private final @NotNull DataManager dataManager;
+    private final @NonNull SkyLeaderboards skyLeaderboards;
+    private final @NonNull DataManager dataManager;
 
     /**
      * Constructor
      * @param skyLeaderboards The Plugin's Instance
      * @param dataManager A DataManager instance
      */
-    public HeadManager(@NotNull SkyLeaderboards skyLeaderboards, @NotNull DataManager dataManager) {
+    public HeadManager(@NonNull SkyLeaderboards skyLeaderboards, @NonNull DataManager dataManager) {
         this.skyLeaderboards = skyLeaderboards;
         this.dataManager = dataManager;
     }
@@ -60,7 +62,7 @@ public class HeadManager {
         if(skyLeaderboards.getServer().getOnlinePlayers().isEmpty()) return;
 
         // Get the plugin's configuration
-        Data data = dataManager.getData();
+        Data data = dataManager.getConfiguration();
         if(data == null) return;
         // Get the first player online just in-case a Placeholder requires a player to parse them.
         Player firstPlayer = skyLeaderboards.getServer().getOnlinePlayers().stream().toList().getFirst();
@@ -71,13 +73,13 @@ public class HeadManager {
         data.heads().forEach((key, headData) -> {
             // Get the World configured and log an error message if it is null
             if(headData.location().world() == null) {
-                logger.error(AdventureUtil.serialize("The world name for for " + key + " under heads is invalid."));
+                logger.error(AdventureUtil.deserialize("The world name for for " + key + " under heads is invalid."));
                 return;
             }
 
             World world = skyLeaderboards.getServer().getWorld(headData.location().world());
             if(world == null) {
-                logger.error(AdventureUtil.serialize("No world found for world name " + headData.location().world() + " for " + key + " under heads."));
+                logger.error(AdventureUtil.deserialize("No world found for world name " + headData.location().world() + " for " + key + " under heads."));
                 return;
             }
 
@@ -98,45 +100,38 @@ public class HeadManager {
                     OfflinePlayer skullPlayer = skyLeaderboards.getServer().getOfflinePlayer(playerName);
                     // Get the OfflinePlayer's UUID
                     UUID uuid = skullPlayer.getUniqueId();
-                    // Get the PlayerProfile from the cache.
-                    PlayerProfile playerProfile = PlayerUtil.getCachedPlayerProfile(uuid);
+                    // Get the PlayerProfile
+                    CompletableFuture<PlayerProfile> future = PlayerUtil.getOrCreatePlayerProfile(uuid);
 
-                    // If the PlayerProfile in the cache does not exist, attempt to add it to the cache.
-                    // If it does, we just update the Skull with the PlayerProfile.
-                    if(playerProfile == null) {
-                        // If the player is online and connected, the profile is already complete and can be added to the cache.
-                        // Otherwise, we attempt to complete the profile then cache it.
-                        // We finally then update the Skull with the PlayerProfile.
-                        if(skullPlayer.isOnline() && skullPlayer.isConnected() && skullPlayer.getPlayerProfile().isComplete()) {
-                            // Cache the player profile
-                            PlayerProfile updatedProfile = skullPlayer.getPlayerProfile();
-                            PlayerUtil.cachePlayerProfile(uuid, skullPlayer.getPlayerProfile());
-
-                            // Update the skull
-                            skull.setPlayerProfile(updatedProfile);
-                            skull.update(true);
-                        } else {
-                            CompletableFuture<PlayerProfile> future = skullPlayer.getPlayerProfile().update();
-
-                            future.thenAccept(updatedProfile -> {
-                                // Cache the player profile
-                                PlayerUtil.cachePlayerProfile(uuid, updatedProfile);
-
-                                // Update the skull sync because the API is not thread safe.
+                    future.thenAccept(playerProfile -> {
+                        if(VersionUtil.isLegacy()) {
+                            if(VersionUtil.getMajorVersion() >= 21 && VersionUtil.getMinorVersion() >= 9) {
+                                // Done sync because the API is not thread safe
                                 skyLeaderboards.getServer().getScheduler().runTask(skyLeaderboards, () -> {
-                                    skull.setPlayerProfile(updatedProfile);
+                                    ResolvableProfile resolvableProfile = ResolvableProfile.resolvableProfile(playerProfile);
+                                    skull.setProfile(resolvableProfile);
                                     skull.update(true);
                                 });
+                            } else {
+                                // Done sync because the API is not thread safe
+                                skyLeaderboards.getServer().getScheduler().runTask(skyLeaderboards, () -> {
+                                    // The deprecated usage here is to versions < 1.21.9
+                                    skull.setPlayerProfile(playerProfile);
+                                    skull.update(true);
+                                });
+                            }
+                        } else {
+                            // Done sync because the API is not thread safe
+                            skyLeaderboards.getServer().getScheduler().runTask(skyLeaderboards, () -> {
+                                ResolvableProfile resolvableProfile = ResolvableProfile.resolvableProfile(playerProfile);
+                                skull.setProfile(resolvableProfile);
+                                skull.update(true);
                             });
                         }
-                    } else {
-                        // Update the skull
-                        skull.setPlayerProfile(playerProfile);
-                        skull.update(true);
-                    }
+                    });
                 }
             } else {
-                logger.error(AdventureUtil.serialize("The block in world " +
+                logger.error(AdventureUtil.deserialize("The block in world " +
                         headData.location().world() +
                         " at x: " + headData.location().x() +
                         " y: " + headData.location().y() +

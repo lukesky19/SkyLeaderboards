@@ -30,7 +30,7 @@ import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
-import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NonNull;
 
 /**
  * This class manages the updating of Citizen's NPC skins.
@@ -44,7 +44,7 @@ public class NPCManager {
      * @param skyLeaderboards The Plugin's Instance
      * @param dataManager A DataLoader instance
      */
-    public NPCManager(@NotNull SkyLeaderboards skyLeaderboards, @NotNull DataManager dataManager) {
+    public NPCManager(@NonNull SkyLeaderboards skyLeaderboards, @NonNull DataManager dataManager) {
         this.skyLeaderboards = skyLeaderboards;
         this.dataManager = dataManager;
     }
@@ -57,7 +57,7 @@ public class NPCManager {
         if(skyLeaderboards.getServer().getOnlinePlayers().isEmpty()) return;
 
         // Get the plugin's configuration
-        Data data = dataManager.getData();
+        Data data = dataManager.getConfiguration();
         if(data == null) return;
         // Get the first player online just in-case a Placeholder requires a player to parse them.
         Player firstPlayer = skyLeaderboards.getServer().getOnlinePlayers().stream().toList().getFirst();
@@ -68,13 +68,13 @@ public class NPCManager {
         data.npcs().forEach((key, npcData) -> {
             // Get the World configured and log an error message if it is null
             if(npcData.location().world() == null) {
-                logger.error(AdventureUtil.serialize("The world name for for " + key + " under npcs is invalid."));
+                logger.error(AdventureUtil.deserialize("The world name for for " + key + " under npcs is invalid."));
                 return;
             }
 
             World world = skyLeaderboards.getServer().getWorld(npcData.location().world());
             if(world == null) {
-                logger.error(AdventureUtil.serialize("No world found for world name " + npcData.location().world() + " for " + key + " under npcs."));
+                logger.error(AdventureUtil.deserialize("No world found for world name " + npcData.location().world() + " for " + key + " under npcs."));
                 return;
             }
 
@@ -100,7 +100,7 @@ public class NPCManager {
                     npc.getOrAddTrait(SkinTrait.class).setSkinName(skinPlayerName);
                 }
             } else {
-                logger.error(AdventureUtil.serialize("There was no NPC found at " +
+                logger.error(AdventureUtil.deserialize("There was no NPC found at " +
                         npcData.location().world() +
                         " at x: " + npcData.location().x() +
                         " y: " + npcData.location().y() +

@@ -28,21 +28,21 @@ import org.bukkit.block.Sign;
 import org.bukkit.block.sign.Side;
 import org.bukkit.block.sign.SignSide;
 import org.bukkit.entity.Player;
-import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NonNull;
 
 /**
  * This classes manages the updating of Signs.
  */
 public class SignManager {
-    private final @NotNull SkyLeaderboards skyLeaderboards;
-    private final @NotNull DataManager dataManager;
+    private final @NonNull SkyLeaderboards skyLeaderboards;
+    private final @NonNull DataManager dataManager;
 
     /**
      * Constructor
      * @param skyLeaderboards The Plugin's Instance
      * @param dataManager A DataLoader instance
      */
-    public SignManager(@NotNull SkyLeaderboards skyLeaderboards, @NotNull DataManager dataManager) {
+    public SignManager(@NonNull SkyLeaderboards skyLeaderboards, @NonNull DataManager dataManager) {
         this.skyLeaderboards = skyLeaderboards;
         this.dataManager = dataManager;
     }
@@ -55,7 +55,7 @@ public class SignManager {
         if(skyLeaderboards.getServer().getOnlinePlayers().isEmpty()) return;
 
         // Get the plugin's configuration
-        Data data = dataManager.getData();
+        Data data = dataManager.getConfiguration();
         if(data == null) return;
         // Get the first player online just in-case a Placeholder requires a player to parse them.
         Player firstPlayer = skyLeaderboards.getServer().getOnlinePlayers().stream().toList().getFirst();
@@ -66,13 +66,13 @@ public class SignManager {
         data.signs().forEach((key, signData) -> {
             // Get the World configured and log an error message if it is null
             if(signData.location().world() == null) {
-                logger.error(AdventureUtil.serialize("The world name for for " + key + " under signs is invalid."));
+                logger.error(AdventureUtil.deserialize("The world name for for " + key + " under signs is invalid."));
                 return;
             }
 
             World world = skyLeaderboards.getServer().getWorld(signData.location().world());
             if(world == null) {
-                logger.error(AdventureUtil.serialize("No world found for world name " + signData.location().world() + " for " + key + " under signs."));
+                logger.error(AdventureUtil.deserialize("No world found for world name " + signData.location().world() + " for " + key + " under signs."));
                 return;
             }
 
@@ -88,26 +88,26 @@ public class SignManager {
 
                 // Update each line of the sign (front and back) based on the sign data config.
                 if (signData.lines().one() != null) {
-                    frontSide.line(0, AdventureUtil.serialize(firstPlayer, signData.lines().one()));
-                    backSide.line(0, AdventureUtil.serialize(firstPlayer, signData.lines().one()));
+                    frontSide.line(0, AdventureUtil.deserialize(firstPlayer, signData.lines().one()));
+                    backSide.line(0, AdventureUtil.deserialize(firstPlayer, signData.lines().one()));
                 }
                 if (signData.lines().two() != null) {
-                    frontSide.line(1, AdventureUtil.serialize(firstPlayer, signData.lines().two()));
-                    backSide.line(1, AdventureUtil.serialize(firstPlayer, signData.lines().two()));
+                    frontSide.line(1, AdventureUtil.deserialize(firstPlayer, signData.lines().two()));
+                    backSide.line(1, AdventureUtil.deserialize(firstPlayer, signData.lines().two()));
                 }
                 if (signData.lines().three() != null) {
-                    frontSide.line(2, AdventureUtil.serialize(firstPlayer, signData.lines().three()));
-                    backSide.line(2, AdventureUtil.serialize(firstPlayer, signData.lines().three()));
+                    frontSide.line(2, AdventureUtil.deserialize(firstPlayer, signData.lines().three()));
+                    backSide.line(2, AdventureUtil.deserialize(firstPlayer, signData.lines().three()));
                 }
                 if (signData.lines().four() != null) {
-                    frontSide.line(3, AdventureUtil.serialize(firstPlayer, signData.lines().four()));
-                    backSide.line(3, AdventureUtil.serialize(firstPlayer, signData.lines().four()));
+                    frontSide.line(3, AdventureUtil.deserialize(firstPlayer, signData.lines().four()));
+                    backSide.line(3, AdventureUtil.deserialize(firstPlayer, signData.lines().four()));
                 }
 
                 // Update the block state
                 sign.update(true);
             } else {
-                logger.error(AdventureUtil.serialize("The block in world " +
+                logger.error(AdventureUtil.deserialize("The block in world " +
                         signData.location().world() +
                         " at x: " + signData.location().x() +
                         " y: " + signData.location().y() +

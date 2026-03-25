@@ -31,18 +31,18 @@ import io.papermc.paper.command.brigadier.CommandSourceStack;
 import io.papermc.paper.command.brigadier.Commands;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
-import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NonNull;
 
 /**
  * This class creates the SkyLeaderboards command.
  */
 public class SkyLeaderboardsCommand {
-    private final @NotNull SkyLeaderboards skyLeaderboards;
-    private final @NotNull LocaleManager localeManager;
-    private final @NotNull HeadManager headManager;
-    private final @NotNull NPCManager npcManager;
-    private final @NotNull SignManager signManager;
-    private final @NotNull HoloManager holoManager;
+    private final @NonNull SkyLeaderboards skyLeaderboards;
+    private final @NonNull LocaleManager localeManager;
+    private final @NonNull HeadManager headManager;
+    private final @NonNull NPCManager npcManager;
+    private final @NonNull SignManager signManager;
+    private final @NonNull HoloManager holoManager;
 
     /**
      * Constructor
@@ -54,12 +54,12 @@ public class SkyLeaderboardsCommand {
      * @param holoManager A {@link HoloManager} instance.
      */
     public SkyLeaderboardsCommand(
-            @NotNull SkyLeaderboards skyLeaderboards,
-            @NotNull LocaleManager localeManager,
-            @NotNull HeadManager headManager,
-            @NotNull NPCManager npcManager,
-            @NotNull SignManager signManager,
-            @NotNull HoloManager holoManager) {
+            @NonNull SkyLeaderboards skyLeaderboards,
+            @NonNull LocaleManager localeManager,
+            @NonNull HeadManager headManager,
+            @NonNull NPCManager npcManager,
+            @NonNull SignManager signManager,
+            @NonNull HoloManager holoManager) {
         this.skyLeaderboards = skyLeaderboards;
         this.localeManager = localeManager;
         this.headManager = headManager;
@@ -72,22 +72,22 @@ public class SkyLeaderboardsCommand {
      * Creates the {@link LiteralCommandNode} of type {@link CommandSourceStack} for the skyleaderboards command.
      * @return A {@link LiteralCommandNode} of type {@link CommandSourceStack}.
      */
-    public @NotNull LiteralCommandNode<CommandSourceStack> createCommand() {
+    public @NonNull LiteralCommandNode<CommandSourceStack> createCommand() {
         LiteralArgumentBuilder<CommandSourceStack> builder = Commands.literal("skyleaderboards")
                 .requires(ctx -> ctx.getSender().hasPermission("skyleaderboards.command.skyleaderboards"));
 
         builder.then(Commands.literal("reload")
                 .requires(ctx -> ctx.getSender().hasPermission("skyleaderboards.command.skyleaderboards.reload"))
                 .executes(ctx -> {
-                    Locale locale = localeManager.getLocale();
+                    Locale locale = localeManager.getConfiguration();
                     CommandSender sender = ctx.getSource().getSender();
 
                     skyLeaderboards.reload();
 
                     if(sender instanceof Player) {
-                        sender.sendMessage(AdventureUtil.serialize(locale.prefix() + locale.reload()));
+                        sender.sendMessage(AdventureUtil.deserialize(locale.prefix() + locale.reload()));
                     } else {
-                        skyLeaderboards.getComponentLogger().info(AdventureUtil.serialize(locale.reload()));
+                        sender.sendMessage(AdventureUtil.deserialize(locale.reload()));
                     }
 
                     return 1;
@@ -96,7 +96,7 @@ public class SkyLeaderboardsCommand {
         builder.then(Commands.literal("update")
                 .requires(ctx -> ctx.getSender().hasPermission("skyleaderboards.command.skyleaderboards.update"))
                 .executes(ctx -> {
-                    Locale locale = localeManager.getLocale();
+                    Locale locale = localeManager.getConfiguration();
                     CommandSender sender = ctx.getSource().getSender();
 
                     headManager.update();
@@ -105,9 +105,9 @@ public class SkyLeaderboardsCommand {
                     holoManager.update();
 
                     if(sender instanceof Player) {
-                        sender.sendMessage(AdventureUtil.serialize(locale.prefix() + locale.update()));
+                        sender.sendMessage(AdventureUtil.deserialize(locale.prefix() + locale.update()));
                     } else {
-                        skyLeaderboards.getComponentLogger().info(AdventureUtil.serialize(locale.update()));
+                        sender.sendMessage(AdventureUtil.deserialize(locale.update()));
                     }
 
                     return 1;

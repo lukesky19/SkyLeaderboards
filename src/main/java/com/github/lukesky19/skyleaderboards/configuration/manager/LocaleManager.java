@@ -21,13 +21,9 @@ import com.github.lukesky19.skyleaderboards.SkyLeaderboards;
 import com.github.lukesky19.skyleaderboards.configuration.record.Locale;
 import com.github.lukesky19.skyleaderboards.configuration.record.Settings;
 import com.github.lukesky19.skylib.api.adventure.AdventureUtil;
-import com.github.lukesky19.skylib.api.configurate.ConfigurationUtility;
-import com.github.lukesky19.skylib.libs.configurate.ConfigurateException;
-import com.github.lukesky19.skylib.libs.configurate.yaml.YamlConfigurationLoader;
-import net.kyori.adventure.text.logger.slf4j.ComponentLogger;
-import net.kyori.adventure.text.minimessage.MiniMessage;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import com.github.lukesky19.skylib.api.common.abstracts.config.SimpleConfigManager;
+import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
 
 import java.io.File;
 import java.nio.file.Path;
@@ -35,11 +31,10 @@ import java.nio.file.Path;
 /**
  * This class manages the plugin's locale configuration.
  */
-public class LocaleManager {
-    private final @NotNull SkyLeaderboards skyLeaderboards;
-    private final @NotNull SettingsManager settingsManager;
-    private @Nullable Locale locale;
-    private final @NotNull Locale DEFAULT_LOCALE = new Locale(
+public class LocaleManager extends SimpleConfigManager<Locale> {
+    private final @NonNull SettingsManager settingsManager;
+    private final @NonNull Locale DEFAULT_LOCALE = new Locale(
+            1,
             "<aqua><bold>SkyLeaderboards</bold></aqua><gray> ▪ </gray>",
             "<aqua>The plugin has been reloaded.</aqua>",
             "<red>Force updating signs, heads, and NPCs.</red>");
@@ -49,73 +44,82 @@ public class LocaleManager {
      * @param skyLeaderboards A {@link SkyLeaderboards} instance.
      * @param settingsManager A {@link SettingsManager} instance.
      */
-    public LocaleManager(@NotNull SkyLeaderboards skyLeaderboards, @NotNull SettingsManager settingsManager) {
-        this.skyLeaderboards = skyLeaderboards;
+    public LocaleManager(@NonNull SkyLeaderboards skyLeaderboards, @NonNull SettingsManager settingsManager) {
+        super(skyLeaderboards, Locale.class);
         this.settingsManager = settingsManager;
     }
 
     /**
-     * Get the plugin's locale.
-     * Will return the DEFAULT_LOCALE if the configured locale is null.
-     * @return Locale object containing the plugin's messages.
+     * Gets the plugin's locale if not null or the default locale otherwise.
+     * @return The plugin's locale if not null or the default locale otherwise.
      */
-    public Locale getLocale() {
-        if(locale != null) return locale;
-
-        return DEFAULT_LOCALE;
+    @Override
+    public @NonNull Locale getConfiguration() {
+        if(configuration == null) return DEFAULT_LOCALE;
+        return configuration;
     }
 
-    /**
-     * Reloads the plugin's locale configuration.
-     */
-    public void reload() {
-        locale = null;
-        final Settings settings = settingsManager.getSettings();
-        final ComponentLogger logger = skyLeaderboards.getComponentLogger();
-
+    @Override
+    public void loadConfiguration() {
+        Settings settings = settingsManager.getConfiguration();
         if(settings == null) {
-            logger.error(AdventureUtil.serialize("<red>The plugin's locale config cannot be loaded due to an error with your settings.yml config.</red>"));
+            logger.error(AdventureUtil.deserialize("<red>Failed to load plugin's locale due to plugin settings being null.</red>"));
             return;
         }
-
-        copyDefaultLocales();
-
         if(settings.locale() == null) {
-            logger.error(MiniMessage.miniMessage().deserialize("<red>Please check your server's console.</red>"));
+            logger.error(AdventureUtil.deserialize("<red>Failed to load plugin's locale to use in settings.yml is null.</red>"));
             return;
         }
 
-        Path path = Path.of(skyLeaderboards.getDataFolder() + File.separator + "locale" + File.separator + (settings.locale() + ".yml"));
+        String localeString = settings.locale();
+        Path path = Path.of(plugin.getDataFolder() + File.separator + "locale" + File.separator + (localeString + ".yml"));
+        setConfigurationPath(path);
 
-        YamlConfigurationLoader loader = ConfigurationUtility.getYamlConfigurationLoader(path);
-        try {
-            locale = loader.load().get(Locale.class);
-        } catch (ConfigurateException e) {
-            throw new RuntimeException(e);
-        }
-
-        checkLocale();
+        super.loadConfiguration();
     }
 
-    /**
-     * Copies the default locale files bundled with the plugin.
-     */
-    private void copyDefaultLocales() {
-        Path path = Path.of(skyLeaderboards.getDataFolder() + File.separator + "locale" + File.separator + "en_US.yml");
-        if (!path.toFile().exists()) {
-            skyLeaderboards.saveResource("locale" + File.separator + "en_US.yml", false);
+    @Override
+    public void saveBundledConfig() {
+        Path path = Path.of(plugin.getDataFolder() + File.separator + "locale" + File.separator + "en_US.yml");
+        if(!path.toFile().exists()) {
+            plugin.saveResource("locale" + File.separator + "en_US.yml", false);
         }
     }
 
     /**
-     * Checks the locale for any missing messages.
+     * Migrate the locale.
+     * @param locale The {@link Locale} to migrate.
+     * @return The migrated {@link Locale} or null if migration failed.
      */
-    private void checkLocale() {
-        if(locale == null) return;
+    @Override
+    public @Nullable Locale migrateConfiguration(@NonNull Locale locale) {
+        if(locale.version() == 0) {
+            return new Locale(
+                    1,
+                    locale.prefix(),
+                    locale.reload(),
+                    locale.update());
+        }
 
-        if(locale.prefix() == null
-                || locale.reload() == null
-                || locale.update() == null)
-            locale = null;
+        return locale;
+    }
+
+    /**
+     * Validates if the locale is missing any strings.
+     */
+    @Override
+    public boolean validateConfiguration(@Nullable Locale configuration) {
+        if(configuration == null) return false;
+
+        if(configuration.prefix() == null
+                || configuration.reload() == null
+                || configuration.update() == null) {
+            logger.error(AdventureUtil.deserialize("Your locale is missing one of the plugin's messages. The default locale will be used."));
+            logger.info(AdventureUtil.deserialize("You can regenerate your locale file by deleting it or adding the missing messages to resolve the issue."));
+
+            return false;
+        }
+
+        return true;
     }
 }

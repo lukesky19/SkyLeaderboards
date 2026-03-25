@@ -18,7 +18,7 @@
 package com.github.lukesky19.skyleaderboards.configuration.record;
 
 import com.github.lukesky19.skylib.libs.configurate.objectmapping.ConfigSerializable;
-import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NonNull;
 
 import javax.annotation.Nullable;
 import java.util.List;
@@ -26,6 +26,7 @@ import java.util.Map;
 
 /**
  * This record contains the data to update leaderboards with.
+ * @param version The config version.
  * @param heads The {@link Map} of {@link Integer} to {@link Head} configuration for head-based leaderboards.
  * @param signs The {@link Map} of {@link Integer} to {@link Sign} configuration for sign-based leaderboards.
  * @param npcs The {@link Map} of {@link Integer} to {@link NPC} configuration for npc-based leaderboards.
@@ -33,17 +34,18 @@ import java.util.Map;
  */
 @ConfigSerializable
 public record Data(
-        @NotNull Map<Integer, Head> heads,
-        @NotNull Map<Integer, Sign> signs,
-        @NotNull Map<Integer, NPC> npcs,
-        @NotNull Map<Integer, Holo> holos) {
+        int version,
+        @NonNull Map<Integer, Head> heads,
+        @NonNull Map<Integer, Sign> signs,
+        @NonNull Map<Integer, NPC> npcs,
+        @NonNull Map<Integer, Holo> holos) {
     /**
      * The configuration for a head leaderboard.
      * @param location The {@link Location} config for the head.
      * @param placeholder The placeholder that results in a player name to set the head's texture to.
      */
     @ConfigSerializable
-    public record Head(@NotNull Location location, @Nullable String placeholder) {}
+    public record Head(@NonNull Location location, @Nullable String placeholder) {}
 
     /**
      * The configuration for a sign leaderboard.
@@ -51,7 +53,7 @@ public record Data(
      * @param lines The {@link Lines} config for the sign.
      */
     @ConfigSerializable
-    public record Sign(@NotNull Location location, @NotNull Lines lines) {}
+    public record Sign(@NonNull Location location, @NonNull Lines lines) {}
 
     /**
      * The configuration for an NPC leaderboard.
@@ -59,7 +61,7 @@ public record Data(
      * @param placeholder The placeholder that results in a player name to set the NPC's skin to.
      */
     @ConfigSerializable
-    public record NPC(@NotNull Location location, @Nullable String placeholder) {}
+    public record NPC(@NonNull Location location, @Nullable String placeholder) {}
 
     /**
      * The configuration for a hologram leaderboard.
@@ -69,7 +71,7 @@ public record Data(
     @ConfigSerializable
     public record Holo(
             @Nullable String hologramId,
-            @NotNull List<String> lines) {}
+            @NonNull List<String> lines) {}
 
     /**
      * This record contains the data to create a {@link org.bukkit.Location}.

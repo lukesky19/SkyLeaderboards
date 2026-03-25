@@ -17,56 +17,53 @@
 */
 package com.github.lukesky19.skyleaderboards.configuration.manager;
 
-import com.github.lukesky19.skyleaderboards.SkyLeaderboards;
 import com.github.lukesky19.skyleaderboards.configuration.record.Settings;
-import com.github.lukesky19.skylib.api.configurate.ConfigurationUtility;
-import com.github.lukesky19.skylib.libs.configurate.ConfigurateException;
-import com.github.lukesky19.skylib.libs.configurate.yaml.YamlConfigurationLoader;
-import org.jetbrains.annotations.NotNull;
+import com.github.lukesky19.skylib.api.adventure.AdventureUtil;
+import com.github.lukesky19.skylib.api.common.abstracts.SkyPlugin;
+import com.github.lukesky19.skylib.api.common.abstracts.config.SimpleConfigManager;
+import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
 
-import javax.annotation.Nullable;
 import java.io.File;
 import java.nio.file.Path;
 
 /**
  * This class manages the plugin's settings.
  */
-public class SettingsManager {
-    private final @NotNull SkyLeaderboards skyLeaderboards;
-    private @Nullable Settings settings;
-
+public class SettingsManager extends SimpleConfigManager<Settings> {
     /**
      * Constructor
-     * @param skyLeaderboards A {@link SkyLeaderboards} instance.
+     * @param plugin A {@link SkyPlugin}.
      */
-    public SettingsManager(@NotNull SkyLeaderboards skyLeaderboards) {
-        this.skyLeaderboards = skyLeaderboards;
+    public SettingsManager(@NonNull SkyPlugin plugin) {
+        super(plugin, Path.of(plugin.getDataFolder() + File.separator + "settings.yml"), Settings.class);
     }
 
-    /**
-     * Get the plugin's {@link Settings}.
-     * @return The plugin's {@link Settings} or null.
-     */
-    public @Nullable Settings getSettings() {
+    @Override
+    public void saveBundledConfig() {
+        plugin.saveResource("settings.yml", false);
+    }
+
+    @Override
+    public @Nullable Settings migrateConfiguration(@NonNull Settings settings) {
+        if(settings.version() == 0) {
+            return new Settings(1, settings.locale());
+        }
+
         return settings;
     }
 
-    /**
-     * Reloads the plugin's settings.
-     */
-    public void reload() {
-        settings = null;
+    @Override
+    public boolean validateConfiguration(@Nullable Settings configuration) {
+        if(configuration == null) return false;
 
-        Path path = Path.of(skyLeaderboards.getDataFolder() + File.separator + "settings.yml");
-        if(!path.toFile().exists()) {
-            skyLeaderboards.saveResource("settings.yml", false);
+        if(configuration.locale() == null) {
+            logger.error(AdventureUtil.deserialize("Your settings.yml is missing a defined locale."));
+            logger.info(AdventureUtil.deserialize("You can regenerate your settings file by deleting it or defining the locale to use to resolve the issue."));
+
+            return false;
         }
 
-        YamlConfigurationLoader loader = ConfigurationUtility.getYamlConfigurationLoader(path);
-        try {
-            settings = loader.load().get(Settings.class);
-        } catch (ConfigurateException e) {
-            throw new RuntimeException(e);
-        }
+        return true;
     }
 }

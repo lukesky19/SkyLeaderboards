@@ -19,18 +19,18 @@ package com.github.lukesky19.skyleaderboards.manager;
 
 import com.github.lukesky19.skyleaderboards.SkyLeaderboards;
 import org.bukkit.scheduler.BukkitTask;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
 
 /**
  * This class manages the task that updates leaderboards every 5 minutes.
  */
 public class TaskManager {
-    private final @NotNull SkyLeaderboards skyLeaderboards;
-    private final @NotNull HeadManager headManager;
-    private final @NotNull NPCManager npcManager;
-    private final @NotNull SignManager signManager;
-    private final @NotNull HoloManager holoManager;
+    private final @NonNull SkyLeaderboards skyLeaderboards;
+    private final @NonNull HeadManager headManager;
+    private final @NonNull NPCManager npcManager;
+    private final @NonNull SignManager signManager;
+    private final @NonNull HoloManager holoManager;
     private @Nullable BukkitTask task;
 
     /**
@@ -42,11 +42,11 @@ public class TaskManager {
      * @param holoManager A {@link HoloManager} instance.
      */
     public TaskManager(
-            @NotNull SkyLeaderboards skyLeaderboards,
-            @NotNull HeadManager headManager,
-            @NotNull NPCManager npcManager,
-            @NotNull SignManager signManager,
-            @NotNull HoloManager holoManager) {
+            @NonNull SkyLeaderboards skyLeaderboards,
+            @NonNull HeadManager headManager,
+            @NonNull NPCManager npcManager,
+            @NonNull SignManager signManager,
+            @NonNull HoloManager holoManager) {
         this.skyLeaderboards = skyLeaderboards;
         this.headManager = headManager;
         this.npcManager = npcManager;
