@@ -20,8 +20,8 @@ package com.github.lukesky19.skyleaderboards.manager;
 import com.github.lukesky19.skyleaderboards.SkyLeaderboards;
 import com.github.lukesky19.skyleaderboards.configuration.manager.DataManager;
 import com.github.lukesky19.skyleaderboards.configuration.record.Data;
-import com.github.lukesky19.skylib.api.adventure.AdventureUtil;
-import com.github.lukesky19.skylib.api.placeholderapi.PlaceholderAPIUtil;
+import com.github.lukesky19.skylib.common.api.adventure.AdventureUtility;
+import com.github.lukesky19.skylib.paper.api.placeholderapi.PlaceholderAPIUtil;
 import eu.decentsoftware.holograms.api.DHAPI;
 import eu.decentsoftware.holograms.api.holograms.Hologram;
 import eu.decentsoftware.holograms.api.holograms.HologramPage;
@@ -75,13 +75,13 @@ public class HoloManager {
                             hologramPage.setLine(i, PlaceholderAPIUtil.parsePlaceholders(firstPlayer, line));
                         }
                     } else {
-                        logger.error(AdventureUtil.deserialize("No hologram page found for id " + holoData.hologramId() + " for key " + key));
+                        logger.error(AdventureUtility.plain("No hologram page found for id " + holoData.hologramId() + " for key " + key));
                     }
                 } else {
-                    logger.error(AdventureUtil.deserialize("No hologram found for id " + holoData.hologramId() + " for key " + key));
+                    logger.error(AdventureUtility.plain("No hologram found for id " + holoData.hologramId() + " for key " + key));
                 }
             } else {
-                logger.error(AdventureUtil.deserialize("Unable to update hologram due to null id for key " + key));
+                logger.error(AdventureUtility.plain("Unable to update hologram due to null id for key " + key));
             }
         });
     }

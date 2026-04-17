@@ -20,7 +20,8 @@ package com.github.lukesky19.skyleaderboards.manager;
 import com.github.lukesky19.skyleaderboards.SkyLeaderboards;
 import com.github.lukesky19.skyleaderboards.configuration.manager.DataManager;
 import com.github.lukesky19.skyleaderboards.configuration.record.Data;
-import com.github.lukesky19.skylib.api.adventure.AdventureUtil;
+import com.github.lukesky19.skylib.common.api.adventure.AdventureUtility;
+import com.github.lukesky19.skylib.paper.api.adventure.PaperAdventureUtility;
 import net.kyori.adventure.text.logger.slf4j.ComponentLogger;
 import org.bukkit.Location;
 import org.bukkit.World;
@@ -66,18 +67,21 @@ public class SignManager {
         data.signs().forEach((key, signData) -> {
             // Get the World configured and log an error message if it is null
             if(signData.location().world() == null) {
-                logger.error(AdventureUtil.deserialize("The world name for for " + key + " under signs is invalid."));
+                logger.error(AdventureUtility.plain("The world name for for " + key + " under signs is invalid."));
                 return;
             }
 
             World world = skyLeaderboards.getServer().getWorld(signData.location().world());
             if(world == null) {
-                logger.error(AdventureUtil.deserialize("No world found for world name " + signData.location().world() + " for " + key + " under signs."));
+                logger.error(AdventureUtility.plain("No world found for world name " + signData.location().world() + " for " + key + " under signs."));
                 return;
             }
 
             // Build the Location object for the sign data config.
             Location loc = new Location(world, signData.location().x(), signData.location().y(), signData.location().z());
+
+            // Ignore unloaded chunks
+            if(!loc.isChunkLoaded()) return;
 
             // If the BlockState at the Location is a Sign, attempt to update it
             // Otherwise we log a warning to the console.
@@ -88,26 +92,26 @@ public class SignManager {
 
                 // Update each line of the sign (front and back) based on the sign data config.
                 if (signData.lines().one() != null) {
-                    frontSide.line(0, AdventureUtil.deserialize(firstPlayer, signData.lines().one()));
-                    backSide.line(0, AdventureUtil.deserialize(firstPlayer, signData.lines().one()));
+                    frontSide.line(0, PaperAdventureUtility.deserialize(firstPlayer, signData.lines().one()));
+                    backSide.line(0, PaperAdventureUtility.deserialize(firstPlayer, signData.lines().one()));
                 }
                 if (signData.lines().two() != null) {
-                    frontSide.line(1, AdventureUtil.deserialize(firstPlayer, signData.lines().two()));
-                    backSide.line(1, AdventureUtil.deserialize(firstPlayer, signData.lines().two()));
+                    frontSide.line(1, PaperAdventureUtility.deserialize(firstPlayer, signData.lines().two()));
+                    backSide.line(1, PaperAdventureUtility.deserialize(firstPlayer, signData.lines().two()));
                 }
                 if (signData.lines().three() != null) {
-                    frontSide.line(2, AdventureUtil.deserialize(firstPlayer, signData.lines().three()));
-                    backSide.line(2, AdventureUtil.deserialize(firstPlayer, signData.lines().three()));
+                    frontSide.line(2, PaperAdventureUtility.deserialize(firstPlayer, signData.lines().three()));
+                    backSide.line(2, PaperAdventureUtility.deserialize(firstPlayer, signData.lines().three()));
                 }
                 if (signData.lines().four() != null) {
-                    frontSide.line(3, AdventureUtil.deserialize(firstPlayer, signData.lines().four()));
-                    backSide.line(3, AdventureUtil.deserialize(firstPlayer, signData.lines().four()));
+                    frontSide.line(3, PaperAdventureUtility.deserialize(firstPlayer, signData.lines().four()));
+                    backSide.line(3, PaperAdventureUtility.deserialize(firstPlayer, signData.lines().four()));
                 }
 
                 // Update the block state
                 sign.update(true);
             } else {
-                logger.error(AdventureUtil.deserialize("The block in world " +
+                logger.error(PaperAdventureUtility.deserialize("The block in world " +
                         signData.location().world() +
                         " at x: " + signData.location().x() +
                         " y: " + signData.location().y() +

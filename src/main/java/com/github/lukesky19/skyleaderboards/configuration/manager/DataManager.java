@@ -19,7 +19,7 @@ package com.github.lukesky19.skyleaderboards.configuration.manager;
 
 import com.github.lukesky19.skyleaderboards.SkyLeaderboards;
 import com.github.lukesky19.skyleaderboards.configuration.record.Data;
-import com.github.lukesky19.skylib.api.common.abstracts.config.SimpleConfigManager;
+import com.github.lukesky19.skylib.common.api.configuration.abstracts.SimpleConfigManager;
 import org.jspecify.annotations.NonNull;
 
 import javax.annotation.Nullable;
@@ -39,7 +39,7 @@ public class DataManager extends SimpleConfigManager<Data> {
     }
 
     @Override
-    public void saveBundledConfig() {
+    public void saveDefaultConfiguration() {
         plugin.saveResource("settings.yml", false);
     }
 

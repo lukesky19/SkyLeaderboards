@@ -24,7 +24,7 @@ import com.github.lukesky19.skyleaderboards.manager.HeadManager;
 import com.github.lukesky19.skyleaderboards.manager.HoloManager;
 import com.github.lukesky19.skyleaderboards.manager.NPCManager;
 import com.github.lukesky19.skyleaderboards.manager.SignManager;
-import com.github.lukesky19.skylib.api.adventure.AdventureUtil;
+import com.github.lukesky19.skylib.common.api.adventure.AdventureUtility;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.tree.LiteralCommandNode;
 import io.papermc.paper.command.brigadier.CommandSourceStack;
@@ -85,9 +85,9 @@ public class SkyLeaderboardsCommand {
                     skyLeaderboards.reload();
 
                     if(sender instanceof Player) {
-                        sender.sendMessage(AdventureUtil.deserialize(locale.prefix() + locale.reload()));
+                        sender.sendMessage(AdventureUtility.deserialize(locale.prefix() + locale.reload()));
                     } else {
-                        sender.sendMessage(AdventureUtil.deserialize(locale.reload()));
+                        sender.sendMessage(AdventureUtility.deserialize(locale.reload()));
                     }
 
                     return 1;
@@ -105,9 +105,9 @@ public class SkyLeaderboardsCommand {
                     holoManager.update();
 
                     if(sender instanceof Player) {
-                        sender.sendMessage(AdventureUtil.deserialize(locale.prefix() + locale.update()));
+                        sender.sendMessage(AdventureUtility.deserialize(locale.prefix() + locale.update()));
                     } else {
-                        sender.sendMessage(AdventureUtil.deserialize(locale.update()));
+                        sender.sendMessage(AdventureUtility.deserialize(locale.update()));
                     }
 
                     return 1;

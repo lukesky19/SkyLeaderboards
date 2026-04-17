@@ -21,10 +21,10 @@ import com.destroystokyo.paper.profile.PlayerProfile;
 import com.github.lukesky19.skyleaderboards.SkyLeaderboards;
 import com.github.lukesky19.skyleaderboards.configuration.manager.DataManager;
 import com.github.lukesky19.skyleaderboards.configuration.record.Data;
-import com.github.lukesky19.skylib.api.adventure.AdventureUtil;
-import com.github.lukesky19.skylib.api.placeholderapi.PlaceholderAPIUtil;
-import com.github.lukesky19.skylib.api.player.PlayerUtil;
-import com.github.lukesky19.skylib.api.version.VersionUtil;
+import com.github.lukesky19.skylib.common.api.adventure.AdventureUtility;
+import com.github.lukesky19.skylib.common.api.version.VersionUtil;
+import com.github.lukesky19.skylib.paper.api.placeholderapi.PlaceholderAPIUtil;
+import com.github.lukesky19.skylib.paper.api.player.PlayerUtil;
 import io.papermc.paper.datacomponent.item.ResolvableProfile;
 import net.kyori.adventure.text.logger.slf4j.ComponentLogger;
 import org.bukkit.Location;
@@ -73,18 +73,21 @@ public class HeadManager {
         data.heads().forEach((key, headData) -> {
             // Get the World configured and log an error message if it is null
             if(headData.location().world() == null) {
-                logger.error(AdventureUtil.deserialize("The world name for for " + key + " under heads is invalid."));
+                logger.error(AdventureUtility.plain("The world name for for " + key + " under heads is invalid."));
                 return;
             }
 
             World world = skyLeaderboards.getServer().getWorld(headData.location().world());
             if(world == null) {
-                logger.error(AdventureUtil.deserialize("No world found for world name " + headData.location().world() + " for " + key + " under heads."));
+                logger.error(AdventureUtility.plain("No world found for world name " + headData.location().world() + " for " + key + " under heads."));
                 return;
             }
 
             // Build the Location object for the head data config.
             Location loc = new Location(world, headData.location().x(), headData.location().y(), headData.location().z());
+
+            // Ignore unloaded chunks
+            if(!loc.isChunkLoaded()) return;
 
             // If the BlockState at the Location is a Skull, attempt to update it
             // Otherwise we log a warning to the console.
@@ -131,7 +134,7 @@ public class HeadManager {
                     });
                 }
             } else {
-                logger.error(AdventureUtil.deserialize("The block in world " +
+                logger.error(AdventureUtility.deserialize("The block in world " +
                         headData.location().world() +
                         " at x: " + headData.location().x() +
                         " y: " + headData.location().y() +

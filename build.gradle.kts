@@ -1,9 +1,9 @@
 plugins {
-    java
+    `java-library`
 }
 
 group = "com.github.lukesky19"
-version = "1.4.0.0"
+version = "1.5.0.0"
 
 repositories {
     mavenCentral()
@@ -26,15 +26,20 @@ repositories {
 }
 
 dependencies {
-    compileOnly("io.papermc.paper:paper-api:1.21.11-R0.1-SNAPSHOT")
-    compileOnly("com.github.lukesky19:SkyLib:1.5.0.0")
+    // Paper
+    compileOnly("io.papermc.paper:paper-api:26.1.2.build.+")
+
+    // SkyLib
+    compileOnly("com.github.lukesky19:SkyLib:2.0.0.0")
+
+    // Integration
     compileOnly("me.clip:placeholderapi:2.11.6")
     compileOnly("net.citizensnpcs:citizens-main:2.0.37-SNAPSHOT")
     compileOnly("com.github.decentsoftware-eu:decentholograms:2.9.6")
 }
 
 java {
-    toolchain.languageVersion.set(JavaLanguageVersion.of(21))
+    toolchain.languageVersion.set(JavaLanguageVersion.of(25))
 }
 
 tasks {

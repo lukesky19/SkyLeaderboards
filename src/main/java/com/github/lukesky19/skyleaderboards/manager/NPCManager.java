@@ -20,8 +20,8 @@ package com.github.lukesky19.skyleaderboards.manager;
 import com.github.lukesky19.skyleaderboards.SkyLeaderboards;
 import com.github.lukesky19.skyleaderboards.configuration.manager.DataManager;
 import com.github.lukesky19.skyleaderboards.configuration.record.Data;
-import com.github.lukesky19.skylib.api.adventure.AdventureUtil;
-import com.github.lukesky19.skylib.api.placeholderapi.PlaceholderAPIUtil;
+import com.github.lukesky19.skylib.common.api.adventure.AdventureUtility;
+import com.github.lukesky19.skylib.paper.api.placeholderapi.PlaceholderAPIUtil;
 import net.citizensnpcs.api.CitizensAPI;
 import net.citizensnpcs.api.npc.NPC;
 import net.citizensnpcs.trait.SkinTrait;
@@ -68,18 +68,21 @@ public class NPCManager {
         data.npcs().forEach((key, npcData) -> {
             // Get the World configured and log an error message if it is null
             if(npcData.location().world() == null) {
-                logger.error(AdventureUtil.deserialize("The world name for for " + key + " under npcs is invalid."));
+                logger.error(AdventureUtility.plain("The world name for for " + key + " under npcs is invalid."));
                 return;
             }
 
             World world = skyLeaderboards.getServer().getWorld(npcData.location().world());
             if(world == null) {
-                logger.error(AdventureUtil.deserialize("No world found for world name " + npcData.location().world() + " for " + key + " under npcs."));
+                logger.error(AdventureUtility.plain("No world found for world name " + npcData.location().world() + " for " + key + " under npcs."));
                 return;
             }
 
             // Build the Location object for the npc data config.
             Location loc = new Location(world, npcData.location().x(), npcData.location().y(), npcData.location().z());
+
+            // Ignore unloaded chunks
+            if(!loc.isChunkLoaded()) return;
 
             // Attempt to get the NPC at the configured location from the npc data config.
             NPC npc = null;
@@ -100,7 +103,7 @@ public class NPCManager {
                     npc.getOrAddTrait(SkinTrait.class).setSkinName(skinPlayerName);
                 }
             } else {
-                logger.error(AdventureUtil.deserialize("There was no NPC found at " +
+                logger.error(AdventureUtility.deserialize("There was no NPC found at " +
                         npcData.location().world() +
                         " at x: " + npcData.location().x() +
                         " y: " + npcData.location().y() +

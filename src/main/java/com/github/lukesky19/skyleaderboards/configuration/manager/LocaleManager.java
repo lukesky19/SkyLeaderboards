@@ -20,8 +20,8 @@ package com.github.lukesky19.skyleaderboards.configuration.manager;
 import com.github.lukesky19.skyleaderboards.SkyLeaderboards;
 import com.github.lukesky19.skyleaderboards.configuration.record.Locale;
 import com.github.lukesky19.skyleaderboards.configuration.record.Settings;
-import com.github.lukesky19.skylib.api.adventure.AdventureUtil;
-import com.github.lukesky19.skylib.api.common.abstracts.config.SimpleConfigManager;
+import com.github.lukesky19.skylib.common.api.adventure.AdventureUtility;
+import com.github.lukesky19.skylib.common.api.configuration.abstracts.SimpleConfigManager;
 import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
 
@@ -63,24 +63,24 @@ public class LocaleManager extends SimpleConfigManager<Locale> {
     public void loadConfiguration() {
         Settings settings = settingsManager.getConfiguration();
         if(settings == null) {
-            logger.error(AdventureUtil.deserialize("<red>Failed to load plugin's locale due to plugin settings being null.</red>"));
+            logger.error(AdventureUtility.plain("Failed to load plugin's locale due to plugin settings being null."));
             return;
         }
         if(settings.locale() == null) {
-            logger.error(AdventureUtil.deserialize("<red>Failed to load plugin's locale to use in settings.yml is null.</red>"));
+            logger.error(AdventureUtility.plain("Failed to load plugin's locale to use in settings.yml is null."));
             return;
         }
 
         String localeString = settings.locale();
-        Path path = Path.of(plugin.getDataFolder() + File.separator + "locale" + File.separator + (localeString + ".yml"));
+        Path path = Path.of(plugin.getDirectoryFile() + File.separator + "locale" + File.separator + (localeString + ".yml"));
         setConfigurationPath(path);
 
         super.loadConfiguration();
     }
 
     @Override
-    public void saveBundledConfig() {
-        Path path = Path.of(plugin.getDataFolder() + File.separator + "locale" + File.separator + "en_US.yml");
+    public void saveDefaultConfiguration() {
+        Path path = Path.of(plugin.getDirectoryFile() + File.separator + "locale" + File.separator + "en_US.yml");
         if(!path.toFile().exists()) {
             plugin.saveResource("locale" + File.separator + "en_US.yml", false);
         }
@@ -114,8 +114,8 @@ public class LocaleManager extends SimpleConfigManager<Locale> {
         if(configuration.prefix() == null
                 || configuration.reload() == null
                 || configuration.update() == null) {
-            logger.error(AdventureUtil.deserialize("Your locale is missing one of the plugin's messages. The default locale will be used."));
-            logger.info(AdventureUtil.deserialize("You can regenerate your locale file by deleting it or adding the missing messages to resolve the issue."));
+            logger.error(AdventureUtility.plain("Your locale is missing one of the plugin's messages. The default locale will be used."));
+            logger.info(AdventureUtility.plain("You can regenerate your locale file by deleting it or adding the missing messages to resolve the issue."));
 
             return false;
         }

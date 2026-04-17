@@ -18,9 +18,9 @@
 package com.github.lukesky19.skyleaderboards.configuration.manager;
 
 import com.github.lukesky19.skyleaderboards.configuration.record.Settings;
-import com.github.lukesky19.skylib.api.adventure.AdventureUtil;
-import com.github.lukesky19.skylib.api.common.abstracts.SkyPlugin;
-import com.github.lukesky19.skylib.api.common.abstracts.config.SimpleConfigManager;
+import com.github.lukesky19.skylib.common.api.adventure.AdventureUtility;
+import com.github.lukesky19.skylib.common.api.configuration.abstracts.SimpleConfigManager;
+import com.github.lukesky19.skylib.paper.api.plugin.SkyPlugin;
 import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
 
@@ -40,7 +40,7 @@ public class SettingsManager extends SimpleConfigManager<Settings> {
     }
 
     @Override
-    public void saveBundledConfig() {
+    public void saveDefaultConfiguration() {
         plugin.saveResource("settings.yml", false);
     }
 
@@ -58,8 +58,8 @@ public class SettingsManager extends SimpleConfigManager<Settings> {
         if(configuration == null) return false;
 
         if(configuration.locale() == null) {
-            logger.error(AdventureUtil.deserialize("Your settings.yml is missing a defined locale."));
-            logger.info(AdventureUtil.deserialize("You can regenerate your settings file by deleting it or defining the locale to use to resolve the issue."));
+            logger.error(AdventureUtility.plain("Your settings.yml is missing a defined locale."));
+            logger.info(AdventureUtility.plain("You can regenerate your settings file by deleting it or defining the locale to use to resolve the issue."));
 
             return false;
         }
