@@ -22,7 +22,7 @@ import com.github.lukesky19.skyleaderboards.configuration.record.Data;
 import com.github.lukesky19.skylib.common.api.configuration.abstracts.SimpleConfigManager;
 import org.jspecify.annotations.NonNull;
 
-import javax.annotation.Nullable;
+import org.jspecify.annotations.Nullable;
 import java.io.File;
 import java.nio.file.Path;
 
